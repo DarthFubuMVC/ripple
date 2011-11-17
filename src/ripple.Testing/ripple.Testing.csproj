@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildSolutionTester.cs" />
+    <Compile Include="Commands\PublishCommandTester.cs" />
     <Compile Include="Commands\UpdateInputTester.cs" />
     <Compile Include="DataMother.cs" />
     <Compile Include="IntegratedChoosingOfRequiredSolutionsTester.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Model\SolutionConfigTester.cs" />
     <Compile Include="NugetDependencyTester.cs" />
     <Compile Include="NugetSpecTester.cs" />
+    <Compile Include="Nuget\PackageRepositoryBuilderTester.cs" />
     <Compile Include="play.cs" />
     <Compile Include="ProjectTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

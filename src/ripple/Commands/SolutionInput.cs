@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using FubuCore;
 using ripple.Model;
 
@@ -34,10 +35,7 @@ namespace ripple.Commands
                 if (new FileSystem().FileExists(".".ToFullPath(), SolutionConfig.FileName))
                 {
                     yield return Solution.ReadFrom(".");
-                }
-
-
-                
+                }                
             }
         }
     }

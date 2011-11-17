@@ -83,6 +83,7 @@
     <Compile Include="Local\NuspecDocument.cs" />
     <Compile Include="Nuget\INugetService.cs" />
     <Compile Include="Nuget\NugetService.cs" />
+    <Compile Include="Nuget\PackageRepositoryBuilder.cs" />
     <Compile Include="RippleFileSystem.cs" />
     <Compile Include="Local\MoveNugetAssemblies.cs" />
     <Compile Include="Local\NugetDependency.cs" />

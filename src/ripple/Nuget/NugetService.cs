@@ -17,23 +17,21 @@ namespace ripple.Nuget
     {
         private readonly IPackageRepository _remoteRepository;
         private readonly IPackageRepository _localRepository;
-        private readonly AggregateRepository _sourceRepository;
+        private readonly IPackageRepository _sourceRepository;
+
         private readonly PhysicalFileSystem _fileSystem;
         private readonly PackageManager _packageManager;
         private readonly Console _console;
         private readonly DefaultPackagePathResolver _pathResolver;
-        private Cache<NugetDependency, IPackage> _packages;
+        private readonly Cache<NugetDependency, IPackage> _packages;
 
-        public NugetService(Solution solution)
+        public NugetService(Solution solution, IEnumerable<string> remoteFeeds)
         {
-            //_defaultPackageSource = new PackageSource(NuGetConstants.DefaultFeedUrl);
+            var repoBuilder = new PackageRepositoryBuilder();
 
-            var factory = new PackageRepositoryFactory();
-
-            _remoteRepository = factory.CreateRepository(GalleryUrl);
-            _localRepository = factory.CreateRepository(solution.PackagesFolder());
-
-            _sourceRepository = new AggregateRepository(new[] { _remoteRepository, _localRepository });
+            _remoteRepository = repoBuilder.BuildRemote(remoteFeeds);
+            _localRepository = repoBuilder.BuildLocal(solution.PackagesFolder());
+            _sourceRepository = repoBuilder.BuildSource(_remoteRepository, _localRepository);
 
             _fileSystem = new PhysicalFileSystem(solution.PackagesFolder());
             _pathResolver = new DefaultPackagePathResolver(_fileSystem);
@@ -50,11 +48,6 @@ namespace ripple.Nuget
             });
         }
 
-        // TODO -- make this allow changes later.  Custom repo's etc.
-        private const string GalleryUrl = "http://packages.nuget.org/v1/FeedService.svc";
-
-
-
         public NugetDependency GetLatest(string nugetName)
         {
             var package = _remoteRepository.Search(nugetName).Where(x => x.Id == nugetName && x.IsLatestVersion).FirstOrDefault();
@@ -66,7 +59,6 @@ namespace ripple.Nuget
             var version = new Version(dependency.Version);
             _packageManager.InstallPackage(dependency.Name, version, true);
         }
-
 
         public void RemoveFromFileSystem(NugetDependency dependency)
         {
@@ -85,8 +77,6 @@ namespace ripple.Nuget
 
             ConsoleWriter.PrintHorizontalLine();
             ConsoleWriter.Write(ConsoleColor.Cyan, "Updating project " + project.ProjectName);
-
-
 
             dependencies.Each(dep =>
             {
@@ -117,7 +107,6 @@ namespace ripple.Nuget
             var document = new XmlDocument();
             document.Load(project.PackagesFile());
             
-
             dependencies.Each(dep =>
             {
                 ConsoleWriter.Write("Trying to remove {0} from {1}", dep, project.ProjectName);

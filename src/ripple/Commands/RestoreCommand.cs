@@ -9,26 +9,46 @@ using System.Linq;
 
 namespace ripple.Commands
 {
+    public class RestoreInput : SolutionInput
+    {
+        [Description("Additional NuGet feed urls separated by '#'")]
+        public string FeedsFlag { get; set; }
+    }
 
     [CommandDescription("Interacts with nuget to restore all the nuget dependencies in a solution tree")]
-    public class RestoreCommand : FubuCommand<SolutionInput>
+    public class RestoreCommand : FubuCommand<RestoreInput>
     {
-        public override bool Execute(SolutionInput input)
+        private readonly IFileSystem _fileSystem = new FileSystem();
+
+        public override bool Execute(RestoreInput input)
         {
-            input.FindSolutions().Each(restoreSolution);
+            input.FindSolutions().Each(s => restoreSolution(s, input));
 
             return true;
         }
 
-        private static void restoreSolution(Solution solution)
+        private void restoreSolution(Solution solution, RestoreInput input)
         {
             Console.WriteLine("Restoring nuget dependencies for solution " + solution.Name);
 
             var packagesFolder = solution.PackagesFolder();
-            new FileSystem().CreateDirectory(packagesFolder);
+            _fileSystem.CreateDirectory(packagesFolder);
 
-            var nugetService = new NugetService(solution);
-            solution.GetAllNugetDependencies().OrderBy(x => x.Name).Each(dep => nugetService.Install(dep));
+            var feeds = input.FeedsFlag.ParseFeeds();
+            var nugetService = new NugetService(solution, feeds);
+            
+            solution.GetAllNugetDependencies().OrderBy(x => x.Name).Each(nugetService.Install);
+        }
+    }
+
+    // Remove when it is possible to have IEnumerable<string> flag
+    public static class StringFeeds
+    {
+        public static IEnumerable<string> ParseFeeds(this string urlString)
+        {
+            return urlString.IsNotEmpty() 
+                ? urlString.ToDelimitedArray('#') 
+                : Enumerable.Empty<string>();
         }
     }
 }

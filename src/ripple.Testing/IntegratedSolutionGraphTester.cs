@@ -22,7 +22,7 @@ namespace ripple.Testing
             var builder = new SolutionGraphBuilder(new FileSystem());
             var solution = builder.ReadFrom("data")["fubumvc"];
 
-            theNugetService = new NugetService(solution);
+            theNugetService = new NugetService(solution, Enumerable.Empty<string>());
         }
 
 

@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using FubuCore.CommandLine;
 using System.Collections.Generic;
 using FubuCore;
@@ -23,11 +22,14 @@ namespace ripple.Commands
         [Description("Forces the update command to override all dependencies even if they are locked")]
         public bool ForceFlag { get; set; }
 
+        [Description("Additional NuGet feed urls separated by '#'")]
+        public string FeedsFlag { get; set; }
+
         public IEnumerable<string> GetAllNugetNames(Solution solution)
         {
             if (NugetFlag.IsNotEmpty())
             {
-                return new string[]{NugetFlag};
+                return new[]{NugetFlag};
             }
 
             if (ForceFlag)
@@ -50,7 +52,8 @@ namespace ripple.Commands
 
             input.FindSolutions().Each(solution =>
             {
-                var nugetService = new NugetService(solution);
+                var feeds = input.FeedsFlag.ParseFeeds();
+                var nugetService = new NugetService(solution, feeds);
                 system.CreateDirectory(solution.PackagesFolder());
 
                 var plan = new NugetUpdatePlan(solution);
