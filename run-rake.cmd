@@ -1,1 +1,1 @@
-rake %*
+bundle exec rake %*

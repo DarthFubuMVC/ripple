@@ -1,6 +1,6 @@
 cd \code\ripple
-rake
-rake publish
+bundle exec rake
+bundle exec rake publish
 cd \code\buildsupport
 git commit -a -m "new stuff"
 git push origin

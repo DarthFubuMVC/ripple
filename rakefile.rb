@@ -1,3 +1,5 @@
+require 'bundler/setup'
+
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 CLR_TOOLS_VERSION = "v4.0.30319"
 
