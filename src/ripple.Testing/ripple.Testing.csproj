@@ -89,6 +89,7 @@
     <Compile Include="Integration\remove_a_dependency_from_a_project.cs" />
     <Compile Include="Integration\remove_a_dependency_from_solution.cs" />
     <Compile Include="Integration\updating_a_dependency_with_transitive_updates.cs" />
+    <Compile Include="Model\BranchDetectorTests.cs" />
     <Compile Include="Model\DependencyCollectionTester.cs" />
     <Compile Include="Model\DependencyInstallationScenario.cs" />
     <Compile Include="Model\DependencyParsing.cs" />

@@ -101,6 +101,7 @@
     <Compile Include="Local\IRippleStep.cs" />
     <Compile Include="Local\IRippleStepRunner.cs" />
     <Compile Include="Local\NuspecDocument.cs" />
+    <Compile Include="Model\BranchDetector.cs" />
     <Compile Include="Model\Dependency.cs" />
     <Compile Include="Model\DependencyCollection.cs" />
     <Compile Include="Model\Feed.cs" />
@@ -188,6 +189,10 @@
     <Compile Include="Steps\ValidateRepository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\run-git.cmd">
+      <Link>run-git.cmd</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="app.config" />
     <None Include="ripple.dependencies.config" />
     <EmbeddedResource Include="Runners\run-git.cmd" />

@@ -37,9 +37,17 @@ namespace ripple.Model
 			return new FloatingFeed(feed.Url);
 		}
 
+        private const string BranchPlaceholder = "{branch}";
+
         private INugetFeed buildFileSystemFeed(Feed feed)
         {
             var directory = feed.Url.Replace("file://", "");
+
+            if (directory.Contains(BranchPlaceholder))
+            {
+                var branchName = BranchDetector.GetBranch();
+                directory = directory.Replace(BranchPlaceholder, branchName);
+            }
 
             if (feed.Mode == UpdateMode.Fixed)
             {
@@ -50,7 +58,7 @@ namespace ripple.Model
         }
 	}
 
-	public class FeedRegistry
+    public class FeedRegistry
 	{
 		private static IFeedProvider _provider;
 
