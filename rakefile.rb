@@ -1,6 +1,5 @@
 require 'bundler/setup'
 require 'rubygems/package_task'
-
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 CLR_TOOLS_VERSION = "v4.0.30319"
 
@@ -32,6 +31,8 @@ build_revision = tc_build_number || Time.new.strftime('5%H%M')
 BUILD_NUMBER = "#{BUILD_VERSION}.#{build_revision}"
 ARTIFACTS = File.expand_path("artifacts")
 
+load File.expand_path('../ripple-cli/rakefile', __FILE__)
+
 props = { :stage => File.expand_path("build"), :artifacts => ARTIFACTS }
 
 desc "**Default**, compiles and runs tests"
@@ -43,7 +44,7 @@ task :ci => [:default, :history, :publish_gem]
 desc "Update the version information for the build"
 assemblyinfo :version do |asm|
   asm_version = BUILD_VERSION + ".0"
-  
+
   begin
     commit = `git log -1 --pretty=format:%H`
   rescue
@@ -135,32 +136,4 @@ task :create_gem do
 	FileUtils.copy 'ripple', 'bin'
 	
 	Rake::Task[:gem].invoke
-end
-
-desc "Pushes any new gem to the artifacts directory"
-task :publish_gem => :create_gem do
-  copyOutputFiles 'pkg', '*.gem', ARTIFACTS
-end
-
-	spec = Gem::Specification.new do |s|
-	  s.platform    = Gem::Platform::RUBY
-	  s.name        = 'ripple'
-	  s.version     = BUILD_NUMBER
-	  s.files = Dir['bin/**/*'] + Dir['lib/*.rb']
-	  s.bindir = 'bin'
-	  s.executables << 'ripple'
-	  
-	  s.summary     = 'Improved dependency management with Nuget'
-	  s.description = 'Ripple is a tool that wraps Nuget with workflow more conducive to upstream/downstream development across code repositories'
-	  
-	  s.authors           = ['Josh Arnold', 'Jeremy D. Miller']
-	  s.email             = 'fubumvc-devel@googlegroups.com'
-	  s.homepage          = 'http://fubu-project.org'
-	  s.rubyforge_project = 'ripple'
-	end
-
-
-Gem::PackageTask.new(spec) do |pkg|
-  pkg.need_zip = true
-  pkg.need_tar = true
 end

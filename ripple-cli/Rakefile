@@ -1,0 +1,49 @@
+require 'bundler'
+
+RIPPLE_CLI_FOLDER = File.dirname(__FILE__)
+
+module Bundler
+  class GemHelper
+    class << self
+      def install_tasks(opts = {})
+        opts[:name] = 'ripple-cli'
+        opts[:dir] = File.dirname(__FILE__)
+        new(opts[:dir], opts[:name]).install
+      end
+    end
+
+    def build_gem
+      @gemspec = Bundler.load_gemspec(@spec_path)
+
+      Dir.chdir(File.expand_path('pkg', RIPPLE_CLI_FOLDER)) do
+        Gem::Package.build @gemspec, true
+      end
+    end
+  end
+end
+
+namespace :gem do
+  require "bundler/gem_tasks"
+
+  task :archive => %w{prepare_bin build} do
+    Dir.chdir(RIPPLE_CLI_FOLDER) do
+      copyOutputFiles 'pkg', '*.gem', ARTIFACTS
+    end
+  end
+
+  task :prepare_bin => :clean do
+    dir = "src/ripple/bin/#{COMPILE_TARGET}/"
+
+    FileUtils.cp_r dir, File.expand_path('bin', RIPPLE_CLI_FOLDER)
+    FileUtils.mv File.expand_path("bin/#{COMPILE_TARGET}", RIPPLE_CLI_FOLDER), File.expand_path("bin/ripple_exe", RIPPLE_CLI_FOLDER)
+  end
+
+  task :clean do
+    Dir.chdir(RIPPLE_CLI_FOLDER) do
+      ['bin/ripple_exe', 'pkg'].each do |d|
+        FileUtils.rm_rf d
+        FileUtils.mkdir_p d
+      end
+    end
+  end
+end

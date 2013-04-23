@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+
+system("#{File.dirname(__FILE__)}/ripple_exe/ripple.exe", *ARGV)
