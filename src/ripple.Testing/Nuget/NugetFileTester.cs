@@ -36,6 +36,15 @@ namespace ripple.Testing.Nuget
 		}
 
 		[Test]
+		public void file_with_number_in_name_and_extra_dots()
+		{
+			var file = fileFor("Spark.Web.MVC3.1.7.6.2.nupkg");
+			file.Name.ShouldEqual("Spark.Web.MVC3");
+			file.Version.ShouldEqual(SemanticVersion.Parse("1.7.6.2"));
+			file.IsPreRelease.ShouldBeFalse();
+		}
+
+		[Test]
 		public void file_with_number_in_name_and_special_version()
 		{
 			var file = fileFor("Storyteller2.2.0.0.15-alpha.nupkg");
