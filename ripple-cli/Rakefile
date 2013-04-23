@@ -1,4 +1,5 @@
 require 'bundler'
+require "rubygems/package"
 
 RIPPLE_CLI_FOLDER = File.dirname(__FILE__)
 
@@ -15,8 +16,10 @@ module Bundler
     def build_gem
       @gemspec = Bundler.load_gemspec(@spec_path)
 
-      Dir.chdir(File.expand_path('pkg', RIPPLE_CLI_FOLDER)) do
-        Gem::Package.build @gemspec, true
+      puts @gemspec.files
+
+      Dir.chdir(RIPPLE_CLI_FOLDER) do
+        Gem::Package::build @gemspec, true
       end
     end
   end
@@ -25,25 +28,36 @@ end
 namespace :gem do
   require "bundler/gem_tasks"
 
-  task :archive => %w{prepare_bin build} do
+  task :archive => %w{compile prepare_bin build} do
     Dir.chdir(RIPPLE_CLI_FOLDER) do
-      copyOutputFiles 'pkg', '*.gem', ARTIFACTS
+      copyOutputFiles '.', '*.gem', ARTIFACTS
     end
+  end
+
+  desc "publishes an official release of the build artifacts"
+  task :publish do
+    gem_file = Dir.glob("artifacts/*.gem").sort.last
+    sh("gem push #{gem_file}")
+
   end
 
   task :prepare_bin => :clean do
     dir = "src/ripple/bin/#{COMPILE_TARGET}/"
 
-    FileUtils.cp_r dir, File.expand_path('bin', RIPPLE_CLI_FOLDER)
-    FileUtils.mv File.expand_path("bin/#{COMPILE_TARGET}", RIPPLE_CLI_FOLDER), File.expand_path("bin/ripple_exe", RIPPLE_CLI_FOLDER)
+    FileUtils.cp_r "#{dir}/.", File.expand_path('bin/ripple_exe/.', RIPPLE_CLI_FOLDER)
   end
 
   task :clean do
     Dir.chdir(RIPPLE_CLI_FOLDER) do
-      ['bin/ripple_exe', 'pkg'].each do |d|
+      ['bin/ripple_exe'].each do |d|
         FileUtils.rm_rf d
         FileUtils.mkdir_p d
       end
+
+      Dir.glob("*.gem").each  do |f|
+        FileUtils.rm f
+      end
+
     end
   end
 end

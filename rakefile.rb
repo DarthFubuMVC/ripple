@@ -39,7 +39,7 @@ desc "**Default**, compiles and runs tests"
 task :default => [:compile, :unit_test]
 
 desc "Target used for the CI server"
-task :ci => [:default, :history, :publish_gem]
+task :ci => [:default, :history, "gem:archive"]
 
 desc "Update the version information for the build"
 assemblyinfo :version do |asm|
@@ -109,10 +109,6 @@ task :publish do
   copyOutputFiles '.', '*.cmd', '../buildsupport'
 end
 
-
-
-
-
 def cleanDirectory(dir)
   FileUtils.rm_rf dir;
   waitfor { !exists?(dir) }
@@ -123,17 +119,3 @@ def cleanFile(file)
   File.delete file unless !File.exist?(file)
 end
 
-desc "Creates the gem for fubudocs.exe"
-task :create_gem do
-	cleanDirectory 'bin'	
-	cleanDirectory 'pkg'
-	
-	dir = "src/ripple/bin/#{COMPILE_TARGET}"
-
-	copyOutputFiles dir, '*.dll', 'bin'
-
-	FileUtils.copy "#{dir}/ripple.exe", 'bin'
-	FileUtils.copy 'ripple', 'bin'
-	
-	Rake::Task[:gem].invoke
-end
