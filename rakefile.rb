@@ -1,10 +1,9 @@
 begin
   require 'bundler/setup'
 rescue LoadError
-  puts 'Bundler needs to be installed prior to running this rake script.'
-  puts ''
-  puts 'Run: gem install bundler'
-  puts ''
+  puts 'Bundler needs to be installed prior to running this rake script. Installing...'
+  system("gem install bundler")
+  system("bundle exec rake", *ARGV)
   exit 0
 end
 
