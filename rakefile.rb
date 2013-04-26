@@ -1,4 +1,13 @@
-require 'bundler/setup'
+begin
+  require 'bundler/setup'
+rescue LoadError
+  puts 'Bundler needs to be installed prior to running this rake script.'
+  puts ''
+  puts 'Run: gem install bundler'
+  puts ''
+  exit 0
+end
+
 require 'rubygems/package_task'
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 CLR_TOOLS_VERSION = "v4.0.30319"
