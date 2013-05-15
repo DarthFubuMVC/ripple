@@ -48,7 +48,7 @@ namespace ripple.Nuget
         {
 			RippleLog.Debug("Searching for {0} from {1}".ToFormat(query, _url));
             var candidates = _repository.Search(query.Name, query.DetermineStability(_stability) == NugetStability.Anything)
-                                        .Where(x => query.MatchesName(x.Id)).OrderBy(x => x.Id).ToList();
+                                        .Where(x => query.Name == x.Id).OrderBy(x => x.Id).ToList();
 
             var candidate = candidates.FirstOrDefault(x => x.IsAbsoluteLatestVersion)
                             ?? candidates.FirstOrDefault(x => x.IsLatestVersion);

@@ -129,6 +129,7 @@
     <Compile Include="NugetSpecTester.cs" />
     <Compile Include="Nuget\CacheableNugetTester.cs" />
     <Compile Include="Nuget\FileSystemFeedTester.cs" />
+    <Compile Include="Nuget\NugetFeedTester.cs" />
     <Compile Include="Nuget\NugetPlanRequestTester.cs" />
     <Compile Include="Nuget\NugetStepRunnerTester.cs" />
     <Compile Include="Nuget\Operations\installing_a_fixed_project_dependency_any_stability.cs" />
