@@ -80,7 +80,8 @@ namespace ripple.Model
 		public string NugetSpecFolder { get; set; }
 		public string SourceFolder { get; set; }
 		public string BuildCommand { get; set; }
-		public string FastBuildCommand { get; set; }
+	    public string FastBuildCommand { get; set; }
+	    public string NugetCacheDirectory { get; set; }
 
 	    public string DefaultFloatConstraint
 	    {
@@ -106,7 +107,7 @@ namespace ripple.Model
             }
 	    }
 
-		public Feed[] Feeds
+	    public Feed[] Feeds
 		{
 			get { return _feeds.ToArray(); }
 			set
@@ -116,7 +117,7 @@ namespace ripple.Model
 			}
 		}
 
-		public Dependency[] Nugets
+	    public Dependency[] Nugets
 		{
 			get { return _configuredDependencies.OrderBy(x => x.Name).ToArray(); }
 			set
@@ -127,11 +128,11 @@ namespace ripple.Model
 			}
 		}
 
-        [XmlArray("Groups")]
+	    [XmlArray("Groups")]
         [XmlArrayItem("Group")]
         public List<DependencyGroup> Groups { get; set; }
 
-		[XmlIgnore]
+	    [XmlIgnore]
 		public DependencyCollection Dependencies
 		{
 			get { return _dependencies.Value; }

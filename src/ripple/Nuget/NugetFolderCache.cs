@@ -159,8 +159,12 @@ namespace ripple.Nuget
 
 		public static NugetFolderCache DefaultFor(Solution solution)
 		{
-			var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-			var ripple = Path.Combine(appData, "ripple");
+		    var ripple = solution.NugetCacheDirectory;
+		    if (string.IsNullOrEmpty(ripple))
+		    {
+		        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+		        ripple = Path.Combine(appData, "ripple");
+		    }
 
 		    return For(ripple, solution);
 		}
