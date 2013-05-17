@@ -32,14 +32,7 @@ namespace ripple.Commands
 
 		public IEnumerable<Feed> Feeds()
 		{
-			if (FeedsFlag.IsEmpty())
-			{
-				return new Feed[0];
-			}
-
-			return FeedsFlag
-				.ParseFeeds()
-				.Select(Feed.FindOrCreate);
+		    return FeedsFlag.GetFeeds();
 		}
 	}
 
@@ -52,6 +45,18 @@ namespace ripple.Commands
 				? urlString.ToDelimitedArray('#')
 				: Enumerable.Empty<string>();
 		}
+
+	    public static IEnumerable<Feed> GetFeeds(this string feedsFlag)
+	    {
+	        if (feedsFlag.IsEmpty())
+	        {
+	            return new Feed[0];
+	        }
+
+	        return feedsFlag
+	            .ParseFeeds()
+	            .Select(Feed.FindOrCreate);
+	    }
 	}
 
 	[CommandDescription("Restores nugets for the solution")]

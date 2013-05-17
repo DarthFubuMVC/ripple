@@ -1,10 +1,14 @@
+using System.ComponentModel;
 using FubuCore.CommandLine;
 using ripple.Model;
+using System.Linq;
 
 namespace ripple.Commands
 {
 	public class ConvertInput : SolutionInput
 	{
+        [Description("Additional NuGet feed urls separated by '#'")]
+        public string FeedsFlag { get; set; }
 	}
 
 	public class ConvertCommand : FubuCommand<ConvertInput>
@@ -13,7 +17,10 @@ namespace ripple.Commands
 		{
 			var solution = Solution.For(input);
 			solution.ConvertTo(SolutionMode.Ripple);
-			solution.Save(true);
+
+		    ApplyCustomFeeds(input.FeedsFlag, solution);
+
+		    solution.Save(true);
 
 			new RestoreCommand().Execute(new RestoreInput
 			{
@@ -28,7 +35,18 @@ namespace ripple.Commands
 			return true;
 		}
 
-		private void forceFixReferences(ConvertInput input)
+        // may be later converted into a small step
+	    private static void ApplyCustomFeeds(string feedsFlag, Solution solution)
+	    {
+	        var customFeeds = feedsFlag.GetFeeds();
+	        if (customFeeds.Any())
+	        {
+	            solution.ClearFeeds();
+	            solution.AddFeeds(customFeeds);
+	        }
+	    }
+
+	    private static void forceFixReferences(ConvertInput input)
 		{
 			var solution = Solution.For(input);
 			solution.EachProject(x =>
