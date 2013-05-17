@@ -12,7 +12,7 @@ namespace ripple.Model
 	public class FeedProvider : IFeedProvider
 	{
 		private readonly Cache<Feed, INugetFeed> _feeds;
-
+        
 		public FeedProvider()
 		{
 			_feeds = new Cache<Feed, INugetFeed>(buildFeed);
@@ -32,7 +32,7 @@ namespace ripple.Model
 
 			if (feed.Mode == UpdateMode.Fixed)
 			{
-				return new NugetFeed(feed.Url, feed.Stability);
+                return new NugetFeed(feed.Url, feed.Stability);
 			}
 
             return new FloatingFeed(feed.Url, feed.Stability);

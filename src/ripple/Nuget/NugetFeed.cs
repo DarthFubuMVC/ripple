@@ -5,7 +5,7 @@ using ripple.Model;
 
 namespace ripple.Nuget
 {
-    public class NugetFeed : INugetFeed
+    public class NugetFeed : NugetFeedBase
     {
         private readonly IPackageRepository _repository;
         private readonly string _url;
@@ -23,7 +23,7 @@ namespace ripple.Nuget
             get { return _url; }
         }
 
-		public IRemoteNuget Find(Dependency query)
+        protected override IRemoteNuget FindImpl(Dependency query)
 		{
 			SemanticVersion version;
 			if (!SemanticVersion.TryParse(query.Version, out version))
@@ -43,8 +43,7 @@ namespace ripple.Nuget
             return new RemoteNuget(package);
         }
 
-
-		public IRemoteNuget FindLatest(Dependency query)
+        protected override IRemoteNuget FindLatestImpl(Dependency query)
         {
 			RippleLog.Debug("Searching for {0} from {1}".ToFormat(query, _url));
             var candidates = _repository.Search(query.Name, query.DetermineStability(_stability) == NugetStability.Anything)
@@ -61,6 +60,6 @@ namespace ripple.Nuget
             return new RemoteNuget(candidate);
         }
 
-		public IPackageRepository Repository { get { return _repository; } }
+		public override IPackageRepository Repository { get { return _repository; } }
     }
 }

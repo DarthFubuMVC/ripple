@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using FubuCore;
 using ripple.Nuget;
 
 namespace ripple.Model
 {
-	public class FeedService : IFeedService
-	{
-        private readonly IList<INugetFeed> _offline = new List<INugetFeed>(); 
+    public class FeedService : IFeedService
+    {
+        private readonly IList<INugetFeed> _offline = new List<INugetFeed>();
+        private readonly Dictionary<Dependency, IRemoteNuget> _nugetForCache = new Dictionary<Dependency, IRemoteNuget>();
+        private readonly Dictionary<Dependency, IEnumerable<Dependency>> _dependenciesForFixedCache = new Dictionary<Dependency, IEnumerable<Dependency>>();
+        private readonly Dictionary<Dependency, IEnumerable<Dependency>> _dependenciesForFloatCache = new Dictionary<Dependency, IEnumerable<Dependency>>();
 
         private void markOffline(INugetFeed feed)
         {
@@ -46,10 +48,17 @@ namespace ripple.Model
             }
         }
 
-		public virtual IRemoteNuget NugetFor(Solution solution, Dependency dependency)
-		{
-		    return nugetFor(solution, dependency);
-		}
+        public virtual IRemoteNuget NugetFor(Solution solution, Dependency dependency)
+        {
+            IRemoteNuget feed;
+            if (_nugetForCache.TryGetValue(dependency, out feed) == false)
+            {
+                feed = nugetFor(solution, dependency);
+                _nugetForCache[dependency] = feed;
+            }
+
+            return feed;
+        }
 
         private IRemoteNuget nugetFor(Solution solution, Dependency dependency, bool retrying = false)
         {
@@ -86,30 +95,41 @@ namespace ripple.Model
             return remoteOrCached(solution, nuget);
         }
 
-		private IRemoteNuget remoteOrCached(Solution solution, IRemoteNuget nuget)
-		{
-			if (nuget == null) return null;
-			return solution.Cache.Retrieve(nuget);
-		}
+        private IRemoteNuget remoteOrCached(Solution solution, IRemoteNuget nuget)
+        {
+            if (nuget == null) return null;
+            return solution.Cache.Retrieve(nuget);
+        }
 
-		private IRemoteNuget getLatestFromFloatingFeed(INugetFeed feed, Dependency dependency)
-		{
-			var floatingFeed = feed as IFloatingFeed;
-			if (floatingFeed == null) return null;
+        private IRemoteNuget getLatestFromFloatingFeed(INugetFeed feed, Dependency dependency)
+        {
+            var floatingFeed = feed as IFloatingFeed;
+            if (floatingFeed == null) return null;
 
-			var floatedResult = floatingFeed.GetLatest().SingleOrDefault(x => dependency.MatchesName(x.Name));
-			if (floatedResult != null && dependency.Mode == UpdateMode.Fixed && floatedResult.IsUpdateFor(dependency))
-			{
-				return null;
-			}
+            var floatedResult = floatingFeed.GetLatest().SingleOrDefault(x => dependency.MatchesName(x.Name));
+            if (floatedResult != null && dependency.Mode == UpdateMode.Fixed && floatedResult.IsUpdateFor(dependency))
+            {
+                return null;
+            }
 
-			return floatedResult;
-		}
+            return floatedResult;
+        }
 
         // Almost entirely covered by integration tests
         public IEnumerable<Dependency> DependenciesFor(Solution solution, Dependency dependency, UpdateMode mode)
         {
-            return findDependenciesFor(solution, dependency, mode);
+            var cache = mode == UpdateMode.Fixed ? _dependenciesForFixedCache : _dependenciesForFloatCache;
+
+            IEnumerable<Dependency> dependencies;
+            if (cache.TryGetValue(dependency, out dependencies) == false)
+            {
+                dependencies = findDependenciesFor(solution, dependency, mode);
+                cache[dependency] = dependencies;
+            }
+
+            // ReSharper disable PossibleMultipleEnumeration
+            return dependencies.ToArray(); // clone on return
+            // ReSharper restore PossibleMultipleEnumeration
         }
 
         private IEnumerable<Dependency> findDependenciesFor(Solution solution, Dependency dependency, UpdateMode mode, int depth = 0)
@@ -128,79 +148,72 @@ namespace ripple.Model
                 dependencies.Add(dep);
             }
 
-            var tasks = new List<Task>();
             nuget
                 .Dependencies()
-                .Each(x =>
-                {
-                    var task = Task.Factory.StartNew(() => dependencies.AddRange(findDependenciesFor(solution, x, mode, depth + 1)));
-                    tasks.Add(task);
-                });
-
-            Task.WaitAll(tasks.ToArray());
+                .Each(x => dependencies.AddRange(findDependenciesFor(solution, x, mode, depth + 1)));
 
             return dependencies.OrderBy(x => x.Name);
         }
 
-		public IRemoteNuget LatestFor(Solution solution, Dependency dependency, bool forced = false)
-		{
-			if (dependency.Mode == UpdateMode.Fixed && !forced)
-			{
-				return null;
-			}
+        public IRemoteNuget LatestFor(Solution solution, Dependency dependency, bool forced = false)
+        {
+            if (dependency.Mode == UpdateMode.Fixed && !forced)
+            {
+                return null;
+            }
 
-			IRemoteNuget latest = null;
+            IRemoteNuget latest = null;
             var feeds = feedsFor(solution);
 
-			foreach (var feed in feeds)
-			{
-				try
-				{
-				    IRemoteNuget nuget = null;
+            foreach (var feed in feeds)
+            {
+                try
+                {
+                    IRemoteNuget nuget = null;
                     tryFeed(feed, x => nuget = feed.FindLatest(dependency));
-					
-					if (latest == null)
-					{
-						latest = nuget;
-					}
 
-					if (latest != null && nuget != null && latest.Version < nuget.Version)
-					{
-						latest = nuget;
-					}
-				}
-				catch (Exception)
-				{
-					RippleLog.Debug("Error while finding latest " + dependency);
-				}
-			}
+                    if (latest == null)
+                    {
+                        latest = nuget;
+                    }
 
-			if (isUpdate(latest, solution, dependency))
-			{
-				return remoteOrCached(solution, latest);
-			}
+                    if (latest != null && nuget != null && latest.Version < nuget.Version)
+                    {
+                        latest = nuget;
+                    }
+                }
+                catch (Exception)
+                {
+                    RippleLog.Debug("Error while finding latest " + dependency);
+                }
+            }
 
-			return null;
-		}
+            if (isUpdate(latest, solution, dependency))
+            {
+                return remoteOrCached(solution, latest);
+            }
 
-		private bool isUpdate(IRemoteNuget latest, Solution solution, Dependency dependency)
-		{
-			if (latest == null) return false;
+            return null;
+        }
 
-			var localDependencies = solution.LocalDependencies();
-			if (localDependencies.Has(dependency))
-			{
-				var local = localDependencies.Get(dependency);
-				return latest.IsUpdateFor(local);
-			}
+        private bool isUpdate(IRemoteNuget latest, Solution solution, Dependency dependency)
+        {
+            if (latest == null) return false;
 
-			if (dependency.IsFloat())
-			{
-				return true;
-			}
+            var localDependencies = solution.LocalDependencies();
+            if (localDependencies.Has(dependency))
+            {
+                var local = localDependencies.Get(dependency);
+                return latest.IsUpdateFor(local);
+            }
 
-			return latest.IsUpdateFor(dependency);
-		}
+            if (dependency.IsFloat())
+            {
+                return true;
+            }
+
+            return latest.IsUpdateFor(dependency);
+        }
 
         private IEnumerable<INugetFeed> feedsFor(Solution solution)
         {
@@ -214,5 +227,5 @@ namespace ripple.Model
 
             return feeds;
         }
-	}
+    }
 }

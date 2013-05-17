@@ -9,47 +9,48 @@ using ripple.Nuget;
 
 namespace ripple.Testing.Model
 {
-	public class StubFeedProvider : IFeedProvider
-	{
-		private readonly Cache<Feed, StubFeed> _feeds;
+    public class StubFeedProvider : IFeedProvider
+    {
+        private readonly Cache<Feed, StubFeed> _feeds;
 
-		public StubFeedProvider()
-		{
-			_feeds = new Cache<Feed, StubFeed>(feed => new StubFeed(feed));
-		}
+        public StubFeedProvider()
+        {
+            _feeds = new Cache<Feed, StubFeed>(feed => new StubFeed(feed));
+        }
 
-		public INugetFeed For(Feed feed)
-		{
-			return _feeds[feed];
-		}
-	}
+        public INugetFeed For(Feed feed)
+        {
+            return _feeds[feed];
+        }
+    }
 
-	public class StubFeed : INugetFeed
-	{
-		private readonly IList<IRemoteNuget> _nugets = new List<IRemoteNuget>();
+    public class StubFeed : NugetFeedBase
+    {
+        private readonly IList<IRemoteNuget> _nugets = new List<IRemoteNuget>();
         private readonly IList<DependencyError> _explicitErrors = new List<DependencyError>();
-	    private readonly Feed _feed;
+        private readonly Feed _feed;
+        private IPackageRepository _repository;
 
-		public StubFeed(Feed feed)
-		{
-		    _feed = feed;
+        public StubFeed(Feed feed)
+        {
+            _feed = feed;
 
-		    UseRepository(new StubPackageRepository());
-		}
+            UseRepository(new StubPackageRepository());
+        }
 
-	    public StubFeed Add(string name, string version)
-		{
-			return Add(new Dependency(name, version));
-		}
+        public StubFeed Add(string name, string version)
+        {
+            return Add(new Dependency(name, version));
+        }
 
-		public StubFeed Add(Dependency dependency)
-		{
+        public StubFeed Add(Dependency dependency)
+        {
             _nugets.Add(new StubNuget(dependency, () => Repository.As<StubPackageRepository>().GetPackageByDependency(dependency)));
-			return this;
-		}
+            return this;
+        }
 
-		public IRemoteNuget Find(Dependency query)
-		{
+        protected override IRemoteNuget FindImpl(Dependency query)
+        {
             throwIfNeeded(query);
 
             if (query.IsFloat() || query.Version.IsEmpty())
@@ -57,7 +58,7 @@ namespace ripple.Testing.Model
                 return _nugets.FirstOrDefault(x => query.MatchesName(x.Name));
             }
 
-			var version = SemanticVersion.Parse(query.Version);
+            var version = SemanticVersion.Parse(query.Version);
             var matching = _nugets.Where(x => query.MatchesName(x.Name));
 
             if (query.DetermineStability(_feed.Stability) == NugetStability.ReleasedOnly)
@@ -65,17 +66,18 @@ namespace ripple.Testing.Model
                 return matching.FirstOrDefault(x => x.Version.SpecialVersion.IsEmpty() && x.Version.Equals(version));
             }
 
-		    return matching.FirstOrDefault(x => x.Version.Version.Equals(version.Version));
-		}
+            return matching.FirstOrDefault(x => x.Version.Version.Equals(version.Version));
+        }
 
-		public IRemoteNuget FindLatest(Dependency query)
-		{
+        protected override IRemoteNuget FindLatestImpl(Dependency query)
+        {
+            Console.WriteLine("FindLatest in {0} for {1}", _repository.GetHashCode(), query);
             throwIfNeeded(query);
 
-			return _nugets.Where(x => x.Name == query.Name)
-			              .OrderByDescending(x => x.Version)
-			              .FirstOrDefault();
-		}
+            return _nugets.Where(x => x.Name == query.Name)
+                          .OrderByDescending(x => x.Version)
+                          .FirstOrDefault();
+        }
 
         private void throwIfNeeded(Dependency dependency)
         {
@@ -97,17 +99,20 @@ namespace ripple.Testing.Model
             return this;
         }
 
-		public void ConfigureRepository(Action<StubPackageRepository> configure)
-		{
-			configure((StubPackageRepository)Repository);
-		}
+        public void ConfigureRepository(Action<StubPackageRepository> configure)
+        {
+            configure((StubPackageRepository)Repository);
+        }
 
-		public void UseRepository(StubPackageRepository repository)
-		{
-			Repository = repository;
-		}
+        public void UseRepository(StubPackageRepository repository)
+        {
+            _repository = repository;
+        }
 
-		public IPackageRepository Repository { get; private set; }
+        public override IPackageRepository Repository
+        {
+            get { return _repository; }
+        }
 
         public class DependencyError
         {
@@ -125,5 +130,5 @@ namespace ripple.Testing.Model
                 return Dependency.Equals(dependency);
             }
         }
-	}
+    }
 }

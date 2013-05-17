@@ -10,11 +10,12 @@ using ripple.Model;
 
 namespace ripple.Nuget
 {
-    public class FileSystemNugetFeed : INugetFeed
+    public class FileSystemNugetFeed : NugetFeedBase
     {
         private readonly string _directory;
         private readonly FubuCore.IFileSystem _fileSystem;
         private readonly NugetStability _stability;
+        private IPackageRepository _repository;
 
         public FileSystemNugetFeed(string directory, NugetStability stability)
         {
@@ -59,7 +60,7 @@ namespace ripple.Nuget
             return new FileSystemNuget(file); 
         }
 
-        public IRemoteNuget Find(Dependency query)
+        protected override IRemoteNuget FindImpl(Dependency query)
         {
             RippleLog.Debug("Searching for {0} in {1}".ToFormat(query, _directory));
 
@@ -73,7 +74,7 @@ namespace ripple.Nuget
             return findMatching(nuget => query.MatchesName(nuget.Name) && nuget.Version == version);
         }
 
-        public IRemoteNuget FindLatest(Dependency query)
+        protected override IRemoteNuget FindLatestImpl(Dependency query)
         {
             RippleLog.Debug("Searching for latest of {0} in {1}".ToFormat(query, _directory));
 
@@ -93,7 +94,10 @@ namespace ripple.Nuget
             return new FileSystemNuget(nuget);
         }
 
-        public IPackageRepository Repository { get; private set; }
+        public override IPackageRepository Repository
+        {
+            get { return _repository; }
+        }
 
         public override string ToString()
         {

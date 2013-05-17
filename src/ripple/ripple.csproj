@@ -155,6 +155,7 @@
     <Compile Include="Nuget\IRemoteNuget.cs" />
     <Compile Include="Nuget\LocalDependencies.cs" />
     <Compile Include="Nuget\NugetFeed.cs" />
+    <Compile Include="Nuget\NugetFeedBase.cs" />
     <Compile Include="Nuget\NugetFile.cs" />
     <Compile Include="Nuget\NugetFolderCache.cs" />
     <Compile Include="Nuget\NugetPlan.cs" />
