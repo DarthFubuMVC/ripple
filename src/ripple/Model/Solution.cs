@@ -48,6 +48,7 @@ namespace ripple.Model
         private Lazy<DependencyCollection> _dependencies;
         private readonly IList<NugetSpec> _nugetDependencies = new List<NugetSpec>();
         private string _path;
+        private string _cacheLocalPath;
 
         public Solution()
         {
@@ -71,6 +72,8 @@ namespace ripple.Model
             UsePublisher(PublishingService.For(Mode));
             UseBuilder(new NugetPlanBuilder());
 
+            _cacheLocalPath = Cache.LocalPath;
+
             RestoreSettings = new RestoreSettings();
             NuspecSettings = new NuspecSettings();
 
@@ -82,7 +85,19 @@ namespace ripple.Model
         public string SourceFolder { get; set; }
         public string BuildCommand { get; set; }
         public string FastBuildCommand { get; set; }
-        public string NugetCacheDirectory { get; set; }
+        
+        public string NugetCacheDirectory
+        {
+            get { return _cacheLocalPath; }
+            set
+            {
+                if (value.IsNotEmpty())
+                {
+                    _cacheLocalPath = value;
+                    UseCache(NugetFolderCache.DefaultFor(this));
+                }
+            }
+        }
 
         public string DefaultFloatConstraint
         {

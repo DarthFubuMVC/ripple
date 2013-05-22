@@ -16,6 +16,7 @@ namespace ripple.Nuget
 	    IRemoteNuget Retrieve(IRemoteNuget nuget);
 
         Feed ToFeed();
+        string LocalPath { get; }
     }
 
 	public class NulloNugetCache : INugetCache
@@ -51,5 +52,7 @@ namespace ripple.Nuget
 	    {
 	        return null;
 	    }
+
+	    public string LocalPath { get { return null; } }
 	}
 }
