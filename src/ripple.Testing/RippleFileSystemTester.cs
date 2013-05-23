@@ -2,6 +2,7 @@
 using FubuCore;
 using FubuTestingSupport;
 using NUnit.Framework;
+using ripple.Commands;
 using ripple.Model;
 
 namespace ripple.Testing
@@ -12,15 +13,18 @@ namespace ripple.Testing
         private string theSolutionDir;
         private string theCurrentDir;
         private string theCodeDir;
+	    private FileSystem fileSystem;
+	    private string rootDir;
 
-        [SetUp]
+	    [SetUp]
         public void SetUp()
-        {
-            theCodeDir = ".".AppendPath("code");
+	    {
+			rootDir = Path.GetTempPath().AppendRandomPath();
+            theCodeDir = rootDir.AppendPath("code");
             theSolutionDir = theCodeDir.AppendPath("ripple");
             theCurrentDir = theSolutionDir.AppendPath("src", "project1");
 
-            var fileSystem = new FileSystem();
+            fileSystem = new FileSystem();
             fileSystem.CreateDirectory(theCodeDir);
             fileSystem.CreateDirectory(theSolutionDir);
             fileSystem.CreateDirectory(theCurrentDir);
@@ -33,8 +37,7 @@ namespace ripple.Testing
         [TearDown]
         public void TearDown()
         {
-            var fileSystem = new FileSystem();
-            fileSystem.DeleteDirectory(theCodeDir);
+            fileSystem.DeleteDirectory(rootDir);
 
             RippleFileSystem.Live();
         }
@@ -57,6 +60,16 @@ namespace ripple.Testing
             RippleFileSystem.FindSolutionDirectory().ShouldEqual(theSolutionDir.ToFullPath());
         }
 
+		[Test]
+		public void finding_the_solution_dir_with_do_not_throw_argument_should_not_throw()
+		{
+			var nonSolutionDir = theCodeDir.AppendPath("not-a-solution-dir");
+			fileSystem.CreateDirectory(nonSolutionDir);
+			RippleFileSystem.StubCurrentDirectory(nonSolutionDir);
+
+			RippleFileSystem.FindSolutionDirectory(false).ShouldBeNull();
+		}
+
         [Test]
         public void finds_the_code_dir()
         {
@@ -69,11 +82,13 @@ namespace ripple.Testing
     {
         private string theSolutionDir;
         private string theCodeDir;
+	    private string rootDir;
 
-        [SetUp]
+	    [SetUp]
         public void SetUp()
         {
-            theCodeDir = ".".AppendPath("code");
+			rootDir = Path.GetTempPath().AppendRandomPath();
+            theCodeDir = rootDir.AppendPath("code");
             theSolutionDir = theCodeDir.AppendPath("ripple");
 
             var fileSystem = new FileSystem();
@@ -90,7 +105,7 @@ namespace ripple.Testing
         public void TearDown()
         {
             var fileSystem = new FileSystem();
-            fileSystem.DeleteDirectory(theCodeDir);
+            fileSystem.DeleteDirectory(rootDir);
 
             RippleFileSystem.Live();
         }

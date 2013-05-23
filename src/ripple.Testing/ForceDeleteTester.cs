@@ -1,8 +1,9 @@
-﻿using System;
+﻿using System.IO;
 using System.Linq;
 using FubuCore;
 using FubuTestingSupport;
 using NUnit.Framework;
+using ripple.Commands;
 
 namespace ripple.Testing
 {
@@ -17,7 +18,7 @@ namespace ripple.Testing
         {
             theFileSystem = new FileSystem();
 
-            theDirectory = Guid.NewGuid().ToString();
+			theDirectory = Path.GetTempPath().AppendRandomPath();
             theFileSystem.CreateDirectory(theDirectory);
 
             createFile("1.txt");

@@ -57,5 +57,10 @@ namespace ripple.Commands
                 continuation(value);
             }
         }
+
+		public static string AppendRandomPath(this string path)
+		{
+			return path.AppendPath((Guid.NewGuid().ToString().Replace("-", String.Empty)));
+		}
     }
 }

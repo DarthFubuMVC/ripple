@@ -1,3 +1,4 @@
+using FubuCore;
 using FubuCore.CommandLine;
 using ripple.Model;
 
@@ -6,13 +7,14 @@ namespace ripple.Commands
     [CommandDescription("Initialize a new ripple solution")]
     public class InitCommand : FubuCommand<InitInput>
     {
-        public const string ExistingSolution = "Cannot initialize existing solution";
+        public const string ExistingSolution = "Cannot initialize an existing ripplized solution. I found a ripple.config at: {0}";
 
         public override bool Execute(InitInput input)
         {
-            if (RippleFileSystem.IsSolutionDirectory())
+	        var rippleConfigDirectory = RippleFileSystem.FindSolutionDirectory(false);
+	        if (rippleConfigDirectory.IsNotEmpty())
             {
-                RippleAssert.Fail(ExistingSolution);
+                RippleAssert.Fail(ExistingSolution.ToFormat(rippleConfigDirectory));
                 return false;
             }
 

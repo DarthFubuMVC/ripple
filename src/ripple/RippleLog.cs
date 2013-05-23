@@ -8,10 +8,8 @@ namespace ripple
 {
     public class RippleFatalError : Exception
     {
-        public RippleFatalError(string message)
-            : base(message)
-        {
-        }
+        public RippleFatalError(string message) : base(message) { }
+		public RippleFatalError(string message, Exception ex) : base(message,ex) { }
     }
 
     public class RippleAssert

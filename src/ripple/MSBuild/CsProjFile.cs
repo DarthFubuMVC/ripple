@@ -40,11 +40,18 @@ namespace ripple.MSBuild
             _filename = filename;
             _solution = solution;
 
-            _document = XElement.Load(filename);
-	        _document.Name = _xmlns + _document.Name.LocalName;
+	        try
+	        {
+		        _document = XElement.Load(filename);
+		        _document.Name = _xmlns + _document.Name.LocalName;
 
-            _references = new Lazy<IList<Reference>>(() => new List<Reference>(readReferences()));
-            _projectReferences = new Lazy<IList<string>>(() => new List<string>(readProjectReferences()));
+		        _references = new Lazy<IList<Reference>>(() => new List<Reference>(readReferences()));
+		        _projectReferences = new Lazy<IList<string>>(() => new List<string>(readProjectReferences()));
+	        }
+	        catch (Exception ex)
+	        {
+		        throw new RippleFatalError("Error reading csproj file: {0}".ToFormat(filename), ex);
+	        }
         }
 
         public string ToolsVersion

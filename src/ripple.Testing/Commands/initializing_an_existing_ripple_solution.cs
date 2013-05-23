@@ -1,4 +1,5 @@
-﻿using FubuTestingSupport;
+﻿using FubuCore;
+using FubuTestingSupport;
 using NUnit.Framework;
 using ripple.Commands;
 
@@ -34,7 +35,7 @@ namespace ripple.Testing.Commands
             {
                 new InitCommand().Execute(new InitInput());
 
-            }).Message.ShouldEqual(InitCommand.ExistingSolution);
+			}).Message.ShouldEqual(InitCommand.ExistingSolution.ToFormat(theScenario.DirectoryForSolution("Test")));
         }
     }
 }

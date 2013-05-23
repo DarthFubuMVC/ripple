@@ -33,9 +33,9 @@ namespace ripple
             _stopAt = dir => dir.ToFullPath() == directory.ToFullPath();
         }
 
-        public static string FindSolutionDirectory()
+        public static string FindSolutionDirectory(bool shouldThrow = true)
         {
-            return findSolutionDir(_currentDir());
+            return findSolutionDir(_currentDir(), shouldThrow);
         }
 
         public static bool IsSolutionDirectory()
@@ -44,7 +44,7 @@ namespace ripple
         }
 
         public static bool IsCodeDirectory()
-        {
+	      {
             if (IsSolutionDirectory()) return false;
 
             // We only traverse one level here

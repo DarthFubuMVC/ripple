@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using FubuCore;
 using FubuTestingSupport;
 using NUnit.Framework;
+using ripple.Commands;
 using ripple.Model;
 
 namespace ripple.Testing.Model
@@ -28,7 +28,7 @@ namespace ripple.Testing.Model
 			theFileSystem.CreateDirectory("SolutionFiles");
 
 			theSolutionFiles = new SolutionFiles(theFileSystem, new SolutionLoader());
-			theSolutionFiles.RootDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SolutionFiles");
+			theSolutionFiles.RootDir = Path.GetTempPath().AppendRandomPath();
 			
 			theFileSystem.CreateDirectory("SolutionFiles", "src");
 
@@ -42,7 +42,7 @@ namespace ripple.Testing.Model
 		[TearDown]
 		public void TearDown()
 		{
-			theFileSystem.DeleteDirectory("SolutionFiles");
+			theFileSystem.DeleteDirectory(theSolutionFiles.RootDir);
 		}
 
 		[Test]
