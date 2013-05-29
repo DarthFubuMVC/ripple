@@ -90,7 +90,7 @@
     <Compile Include="Directives\IDirectiveRunner.cs" />
     <Compile Include="Extract\ExtractInput.cs" />
     <Compile Include="Extract\ExtractCommand.cs" />
-    <Compile Include="Extract\NugetFeed.cs" />
+    <Compile Include="Extract\NugetEntry.cs" />
     <Compile Include="FileSystemExtensions.cs" />
     <Compile Include="IPackageExtensions.cs" />
     <Compile Include="IRippleStep.cs" />
