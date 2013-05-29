@@ -1,3 +1,4 @@
+using System.IO;
 using FubuCore;
 using FubuCore.Util;
 using ripple.Nuget;
@@ -51,6 +52,8 @@ namespace ripple.Model
 
                 RippleLog.Debug("Detected branch feed: {0}. Current branch is {1}. Setting directory to {2}".ToFormat(feed, branchName, directory));
             }
+
+            directory = directory.ToFullPath();
 
             if (feed.Mode == UpdateMode.Fixed)
             {

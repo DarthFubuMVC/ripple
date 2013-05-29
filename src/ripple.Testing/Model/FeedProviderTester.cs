@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using FubuCore;
 using FubuTestingSupport;
 using NUnit.Framework;
+using ripple.Commands;
 using ripple.Model;
 using ripple.Nuget;
 
@@ -69,5 +71,46 @@ namespace ripple.Testing.Model
                        .Url
                        .ShouldEqual(Feed.Fubu.Url);
         }
+
+        [Test]
+        public void single_dot_int_file_system_feed_paths_should_be_expanded_relative_to_cwd()
+        {
+            asCurrentDirectory(cwd => theProvider.For(new Feed("file://./code/nugets", UpdateMode.Fixed))
+                       .As<FileSystemNugetFeed>()
+                       .Directory
+                       .ShouldEqual(Path.Combine(cwd, "code", "nugets")));
+        }
+        
+        [Test]
+        public void double_dot_int_file_system_feed_paths_should_be_expanded_relative_to_cwd()
+        {
+        	asCurrentDirectory(cwd =>
+        	{
+        		var parentDir = Directory.GetParent(cwd).ToString();
+        
+        		theProvider.For(new Feed("file://../code/nugets", UpdateMode.Float))
+        				   .As<FloatingFileSystemNugetFeed>()
+        				   .Directory
+        				   .ShouldEqual(Path.Combine(parentDir, "code", "nugets"));
+        	});
+        }
+        
+        private static void asCurrentDirectory(Action<string> cwdAction)
+        {
+        	var cwd = Directory.GetCurrentDirectory();
+        	try
+        	{
+        		var newCwd = Path.GetTempPath().AppendRandomPath();
+        		Directory.CreateDirectory(newCwd);
+        		Directory.SetCurrentDirectory(newCwd);
+        
+        		cwdAction(newCwd);
+        	}
+        	finally
+        	{
+        		Directory.SetCurrentDirectory(cwd);
+        	}
+        }
+
     }
 }
