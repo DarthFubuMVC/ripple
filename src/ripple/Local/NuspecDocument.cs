@@ -20,7 +20,7 @@ namespace ripple.Local
             var nameTable = new NameTable();
 
             _xmlNamespaceManager = new XmlNamespaceManager(nameTable);
-            _xmlNamespaceManager.AddNamespace("nuspec", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd");
+            _xmlNamespaceManager.AddNamespace("nuspec", Schema);
 
             _xmlns = Schema;
         }
