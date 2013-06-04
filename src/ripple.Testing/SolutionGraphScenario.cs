@@ -65,7 +65,7 @@ namespace ripple.Testing
 
 		public void Cleanup()
 		{
-            _fileSystem.CleanDirectory(_directory);
+            _fileSystem.ForceClean(_directory);
             _fileSystem.DeleteDirectory(_directory);
 
 		    RippleFileSystem.Live();
@@ -276,8 +276,10 @@ namespace ripple.Testing
             public void LocalDependency(string id, string version)
             {
                 var fileName = "{0}.{1}.nupkg".ToFormat(id, version);
-                _fileSystem.CreateDirectory(_solution.PackagesDirectory(), id);
-                _fileSystem.WriteStringToFile(Path.Combine(_solution.PackagesDirectory(), id, fileName), "");
+                var nugetDir = Path.Combine(_solution.PackagesDirectory(), id);
+                _fileSystem.CreateDirectory(nugetDir);
+                var filename = Path.Combine(_solution.PackagesDirectory(), id, fileName);
+                _fileSystem.WriteStringToFile(filename, "");
             }
 
 			public void ProjectDependency(string project, string id)
