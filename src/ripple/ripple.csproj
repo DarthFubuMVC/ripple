@@ -129,6 +129,7 @@
     <Compile Include="Model\NulloDependencyStrategy.cs" />
     <Compile Include="Model\NuspecMap.cs" />
     <Compile Include="Model\NuspecSettings.cs" />
+    <Compile Include="Model\PackageParams.cs" />
     <Compile Include="Model\Project.cs" />
     <Compile Include="Model\RestoreSettings.cs" />
     <Compile Include="Model\RippleProblem.cs" />
