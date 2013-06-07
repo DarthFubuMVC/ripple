@@ -17,20 +17,20 @@ namespace ripple.MSBuild
     {
         public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
         private static readonly XmlNamespaceManager _manager;
-		private static readonly XNamespace _xmlns;
+        private static readonly XNamespace _xmlns;
         private readonly XElement _document;
         private readonly string _filename;
         private readonly Solution _solution;
 
         private readonly Lazy<IList<Reference>> _references;
-        private readonly Lazy<IList<string>> _projectReferences; 
+        private readonly Lazy<IList<string>> _projectReferences;
 
         static CsProjFile()
         {
             _manager = new XmlNamespaceManager(new NameTable());
             _manager.AddNamespace("tns", Schema);
 
-	        _xmlns = Schema;
+            _xmlns = Schema;
         }
 
         public CsProjFile(string filename, Solution solution)
@@ -38,18 +38,18 @@ namespace ripple.MSBuild
             _filename = filename;
             _solution = solution;
 
-	        try
-	        {
-		        _document = XElement.Load(filename);
-		        _document.Name = _xmlns + _document.Name.LocalName;
+            try
+            {
+                _document = XElement.Load(filename);
+                _document.Name = _xmlns + _document.Name.LocalName;
 
-		        _references = new Lazy<IList<Reference>>(() => new List<Reference>(readReferences()));
-		        _projectReferences = new Lazy<IList<string>>(() => new List<string>(readProjectReferences()));
-	        }
-	        catch (Exception ex)
-	        {
-		        throw new RippleFatalError("Error reading csproj file: {0}".ToFormat(filename), ex);
-	        }
+                _references = new Lazy<IList<Reference>>(() => new List<Reference>(readReferences()));
+                _projectReferences = new Lazy<IList<string>>(() => new List<string>(readProjectReferences()));
+            }
+            catch (Exception ex)
+            {
+                throw new RippleFatalError("Error reading csproj file: {0}".ToFormat(filename), ex);
+            }
         }
 
         public string ToolsVersion
@@ -64,38 +64,38 @@ namespace ripple.MSBuild
 
         public IEnumerable<string> ProjectReferences
         {
-            get { return _projectReferences.Value;  }
+            get { return _projectReferences.Value; }
         }
 
         public ReferenceStatus AddReference(string name, string hintPath)
         {
-			if (hintPath.IsNotEmpty())
-			{
-				hintPath = hintPath.Trim();
-			}
+            if (hintPath.IsNotEmpty())
+            {
+                hintPath = hintPath.Trim();
+            }
 
             Reference reference = FindReference(name);
             if (reference == null)
             {
-                reference = new Reference {Name = name};
+                reference = new Reference { Name = name };
                 _references.Value.Add(reference);
             }
 
             string original = reference.HintPath;
             reference.HintPath = hintPath;
+            
+            if (original.IsNotEmpty())
+            {
+                original = original.Trim();
+            }
 
-			if (original.IsNotEmpty())
-			{
-				original = original.Trim();
-			}
+            var status = string.Equals(original, hintPath, StringComparison.OrdinalIgnoreCase) ? ReferenceStatus.Unchanged : ReferenceStatus.Changed;
+            if (status == ReferenceStatus.Changed)
+            {
+                RippleLog.Info("HintPath changed: " + original + " to " + hintPath);
+            }
 
-			var status = string.Equals(original, hintPath, StringComparison.OrdinalIgnoreCase) ? ReferenceStatus.Unchanged : ReferenceStatus.Changed;
-			if (status == ReferenceStatus.Changed)
-			{
-				RippleLog.Info("HintPath changed: " + original + " to " + hintPath);
-			}
-
-	        return status;
+            return status;
         }
 
         public Reference FindReference(string name)
@@ -150,34 +150,40 @@ namespace ripple.MSBuild
             return null;
         }
 
-	    public bool RemoveReferences(IEnumerable<string> references)
-	    {
-		    return references.All(RemoveReference);
-	    }
+        public bool RemoveReferences(IEnumerable<string> references)
+        {
+            return references.All(RemoveReference);
+        }
 
-	    public void Write()
+        public void Write()
         {
             if (_references.IsValueCreated)
             {
                 var nodes = FindReferenceNodes().ToList();
                 foreach (var node in nodes)
                 {
-					node.Remove();
+                    node.Remove();
                 }
 
                 var itemGroup = _document.XPathSelectElement("tns:ItemGroup", _manager);
-				itemGroup.Name = _xmlns + itemGroup.Name.LocalName;
+                itemGroup.Name = _xmlns + itemGroup.Name.LocalName;
 
-                _references.Value.OrderBy(x => x.Name).Each(reference => {
+                _references.Value.OrderBy(x => x.Name).Each(reference =>
+                {
 
-					var node = new XElement(_xmlns + "Reference");
-					node.SetAttributeValue("Include", reference.Name);
+                    var node = new XElement(_xmlns + "Reference");
+                    node.SetAttributeValue("Include", reference.Name);
 
                     if (reference.HintPath.IsNotEmpty())
                     {
-						var hintPath = new XElement(_xmlns + "HintPath");
-                        hintPath.Value = reference.HintPath;
+                        var hintPath = new XElement(_xmlns + "HintPath") { Value = reference.HintPath };
                         node.Add(hintPath);
+                    }
+
+                    if (reference.Aliases.IsNotEmpty())
+                    {
+                        var aliases = new XElement(_xmlns + "Aliases") { Value = reference.Aliases };
+                        node.Add(aliases);
                     }
 
                     itemGroup.Add(node);
@@ -207,15 +213,18 @@ namespace ripple.MSBuild
             {
                 var reference = new Reference
                 {
-					Name = node.Attribute("Include").Value
+                    Name = node.Attribute("Include").Value
                 };
 
                 foreach (var child in node.Elements())
                 {
-					switch (child.Name.LocalName)
+                    switch (child.Name.LocalName)
                     {
                         case "HintPath":
                             reference.HintPath = child.Value;
+                            break;
+                        case "Aliases":
+                            reference.Aliases = child.Value;
                             break;
                     }
                 }
@@ -226,7 +235,7 @@ namespace ripple.MSBuild
 
         public IEnumerable<XElement> FindReferenceNodes()
         {
-	        return _document.XPathSelectElements("tns:ItemGroup/tns:Reference", _manager);
+            return _document.XPathSelectElements("tns:ItemGroup/tns:Reference", _manager);
         }
 
         public override string ToString()
@@ -234,18 +243,18 @@ namespace ripple.MSBuild
             return string.Format("Filename: {0}", _filename);
         }
 
-		public void AddAssemblies(Dependency dep, IEnumerable<IPackageAssemblyReference> assemblies)
+        public void AddAssemblies(Dependency dep, IEnumerable<IPackageAssemblyReference> assemblies)
         {
             bool needsSaved = false;
 
             assemblies = GetCompatibleItemsCore(assemblies).ToList();
 
-            assemblies.Each(assem => 
+            assemblies.Each(assem =>
             {
                 string assemblyName = Path.GetFileNameWithoutExtension(assem.Name);
 
                 if (assemblyName == "_._") return;
-                
+
                 var nugetDir = _solution.NugetFolderFor(dep.Name);
                 var assemblyPath = nugetDir.AppendPath(assem.Path);
 
@@ -265,37 +274,37 @@ namespace ripple.MSBuild
             }
         }
 
-		public void RemoveDuplicateReferences()
-		{
-			var references = References.Select(x =>
-			{
-				var name = x.Name;
-				if (name.Contains(","))
-				{
-					name = name.Split(',').First();
-				}
+        public void RemoveDuplicateReferences()
+        {
+            var references = References.Select(x =>
+            {
+                var name = x.Name;
+                if (name.Contains(","))
+                {
+                    name = name.Split(',').First();
+                }
 
-				return name;
-			});
+                return name;
+            });
 
-			var counts = new Cache<string, List<Reference>>(x => new List<Reference>());
-			references.Each(dependency =>
-			{
-				var duplicates = References.Where(x => x.Matches(dependency));
-				counts[dependency].Fill(duplicates);
-			});
+            var counts = new Cache<string, List<Reference>>(x => new List<Reference>());
+            references.Each(dependency =>
+            {
+                var duplicates = References.Where(x => x.Matches(dependency));
+                counts[dependency].Fill(duplicates);
+            });
 
-			var removals = new List<string>();
-			counts
-				.Where(x => x.Count > 1)
-				.Each(duplicates =>
-				{
-					// Naive but it works for now
-					duplicates.Where(x => x.Name.Contains(",")).Each(x => removals.Add(x.Name));
-				});
+            var removals = new List<string>();
+            counts
+                .Where(x => x.Count > 1)
+                .Each(duplicates =>
+                {
+                    // Naive but it works for now
+                    duplicates.Where(x => x.Name.Contains(",")).Each(x => removals.Add(x.Name));
+                });
 
-			RemoveReferences(removals);
-		}
+            RemoveReferences(removals);
+        }
 
         internal static IEnumerable<T> GetCompatibleItemsCore<T>(IEnumerable<T> items) where T : IFrameworkTargetable
         {
