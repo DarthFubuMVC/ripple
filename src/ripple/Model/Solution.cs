@@ -252,6 +252,8 @@ namespace ripple.Model
         public void AddDependency(Dependency dependency)
         {
             resetDependencies();
+            if (_configuredDependencies.Any(x => x.MatchesName(dependency)))
+                return;
             _configuredDependencies.Fill(dependency);
         }
 

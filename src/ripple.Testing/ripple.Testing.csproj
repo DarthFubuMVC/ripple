@@ -93,6 +93,7 @@
     <Compile Include="Integration\installing_an_existing_solution_dependency.cs" />
     <Compile Include="Integration\installing_an_existing_solution_dependency_to_a_project.cs" />
     <Compile Include="Integration\installing_a_new_package_with_no_versions_on_dependencies.cs" />
+    <Compile Include="Integration\installing_the_same_package_with_different_casing.cs" />
     <Compile Include="Integration\IntegratedChoosingOfRequiredSolutionsTester.cs" />
     <Compile Include="Integration\IntegratedHistoryCommandTester.cs" />
     <Compile Include="Integration\IntegratedInitCommandTester.cs" />
