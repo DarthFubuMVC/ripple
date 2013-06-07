@@ -17,7 +17,6 @@ namespace ripple.MSBuild
     {
         public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
         private static readonly XmlNamespaceManager _manager;
-	    private static readonly XNamespace _namespace;
 		private static readonly XNamespace _xmlns;
         private readonly XElement _document;
         private readonly string _filename;
@@ -28,7 +27,6 @@ namespace ripple.MSBuild
 
         static CsProjFile()
         {
-	        _namespace = "tns";
             _manager = new XmlNamespaceManager(new NameTable());
             _manager.AddNamespace("tns", Schema);
 

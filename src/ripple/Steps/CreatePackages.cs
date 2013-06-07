@@ -18,7 +18,7 @@ namespace ripple.Steps
 
                 RippleLog.Info("Building the nuget spec file at " + spec.Filename + " as version " + version);
 
-                Solution.Package(spec, SemanticVersion.Parse(version), input.DestinationFlag);
+                Solution.Package(spec, SemanticVersion.Parse(version), input.DestinationFlag, input.CreateSymbolsFlag);
                 ConsoleWriter.PrintHorizontalLine();
             });
         }

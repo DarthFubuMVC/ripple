@@ -29,4 +29,4 @@ end
 
 BUILD_NUMBER = @solution.options[:build_number]
 
-load File.expand_path('../ripple-cli/rakefile', __FILE__)
+load File.expand_path('../ripple-cli/Rakefile', __FILE__)

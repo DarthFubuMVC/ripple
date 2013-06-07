@@ -31,6 +31,10 @@ namespace ripple.Commands
         [Description("Custom url for the NuGet server")]
         [FlagAlias("server", 's')]
         public string ServerFlag { get; set; }
+
+        [Description("Create also symbols packages")]
+        [FlagAlias("symbols")]
+        public bool CreateSymbolsFlag { get; set; }
     }
     
     [CommandDescription("Builds and pushes all the nuspec files for a solution(s) to nuget.org")]
@@ -50,7 +54,7 @@ namespace ripple.Commands
                 {
                     RippleLog.Info("Creating and publishing Nuget for " + nuget.Name);
 
-					var packageFile = solution.Package(nuget, SemanticVersion.Parse(input.Version), artifactDirectory);
+					var packageFile = solution.Package(nuget, SemanticVersion.Parse(input.Version), artifactDirectory, input.CreateSymbolsFlag);
                     solution.Publisher.PublishPackage(input.ServerFlag, packageFile, input.ApiKey);
                 });
             });

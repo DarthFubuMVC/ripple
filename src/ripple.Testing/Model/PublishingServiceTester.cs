@@ -35,7 +35,7 @@ namespace ripple.Testing.Model
             var spec = NugetSpec.ReadFrom(theFilename);
             var service = new PublishingService(new StubSolutionFiles { RootDir = ".".ToFullPath() });
 
-            Exception<RippleFatalError>.ShouldBeThrownBy(() => service.CreatePackage(spec, new SemanticVersion("1.0.0.0"), ".".ToFullPath()));
+            Exception<RippleFatalError>.ShouldBeThrownBy(() => service.CreatePackage(spec, new SemanticVersion("1.0.0.0"), ".".ToFullPath(), false));
         }
     }
 }

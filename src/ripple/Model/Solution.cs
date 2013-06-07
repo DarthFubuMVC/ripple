@@ -467,9 +467,9 @@ namespace ripple.Model
             Dependencies.Update(Dependency.For(nuget));
         }
 
-        public string Package(NugetSpec spec, SemanticVersion version, string outputPath)
+        public string Package(NugetSpec spec, SemanticVersion version, string outputPath, bool createSymbols)
         {
-            return Publisher.CreatePackage(spec, version, outputPath);
+            return Publisher.CreatePackage(spec, version, outputPath, createSymbols);
         }
 
         public string NugetFolderFor(NugetSpec spec)
