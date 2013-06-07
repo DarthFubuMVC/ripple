@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FubuCore;
 using ripple.Commands;
@@ -18,7 +19,7 @@ namespace ripple.Steps
             if (!stillReferenced)
             {
                 Solution.RemoveDependency(input.Nuget);
-                new FileSystem().DeleteDirectory(Solution.NugetFolderFor(input.Nuget));
+                new FileSystem().ForceClean(Solution.NugetFolderFor(input.Nuget));
             }
         }
 
@@ -42,7 +43,7 @@ namespace ripple.Steps
             project.Dependencies.Remove(input.Nuget);
 
             var localFile = Solution.NugetFolderFor(input.Nuget);
-            var assemblySet = new FileSet {Include = "*.dll"};
+            var assemblySet = new FileSet { Include = "*.dll" };
 
             var files = new FileSystem().FindFiles(localFile, assemblySet);
             project.CsProj.RemoveReferences(files);
