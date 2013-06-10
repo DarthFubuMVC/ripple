@@ -202,9 +202,10 @@ namespace ripple.Testing.Model
 			solution.UsePublisher(service);
 
 			var version = SemanticVersion.Parse("1.1.2.3");
-			solution.Package(s1, version, "artifacts", false);
+                        var ctx = new PackageParams(s1, version, "artifacts", false);
+                        solution.Package(ctx);
 
-			service.AssertWasCalled(x => x.CreatePackage(s1, version, "artifacts", false));
+                        service.AssertWasCalled(x => x.CreatePackage(ctx));
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,13 +12,13 @@ namespace ripple.Model
 	public interface IPublishingService
 	{
 		IEnumerable<NugetSpec> SpecificationsFor(Solution solution);
-        string CreatePackage(NugetSpec spec, SemanticVersion version, string outputPath, bool createSymbols);
+		string CreatePackage(PackageParams ctx);
 
 		void PublishPackage(string serverUrl, string file, string apiKey);
+	    
 	}
-
-	public class PublishingService : IPublishingService
-	{
+    public class PublishingService : IPublishingService
+    {
         // NOTE: the file exclusions taken from the original NuGet
 
         // Target file paths to exclude when building the lib package for symbol server scenario
@@ -40,15 +41,15 @@ namespace ripple.Model
             PathResolver.FilterPackageFiles(files, file => file.Path, _symbolPackageExcludes);
         }
 
-	    public const string ApiKey = "ripple-api-key";
+        public const string ApiKey = "ripple-api-key";
 
-	    public static readonly IEnumerable<IPackageRule> Rules;
-  
+        public static readonly IEnumerable<IPackageRule> Rules;
+
         static PublishingService()
         {
             try
             {
-                var types = typeof (IPackageRule).Assembly.GetTypes();
+                var types = typeof(IPackageRule).Assembly.GetTypes();
                 Rules = types.Where(x => x.IsConcreteTypeOf<IPackageRule>()).Select(x => (IPackageRule)Activator.CreateInstance(x));
             }
             catch
@@ -57,35 +58,35 @@ namespace ripple.Model
             }
         }
 
-		private readonly ISolutionFiles _files;
+        private readonly ISolutionFiles _files;
 
-		public PublishingService(ISolutionFiles files)
-		{
-			_files = files;
-		}
-
-		public IEnumerable<NugetSpec> SpecificationsFor(Solution solution)
-		{
-			var specs = new List<NugetSpec>();
-			_files.ForNuspecs(solution, file =>
-			{
-				var spec = NugetSpec.ReadFrom(file);
-				spec.Publisher = solution;
-
-				specs.Add(spec);
-			});
-
-			return specs;
-		}
-
-		public static PublishingService For(SolutionMode mode)
-		{
-			return new PublishingService(SolutionFiles.For(mode));
-		}
-
-        public void CreateSymbolsPackage(NugetSpec spec, SemanticVersion version, string outputPath)
+        public PublishingService(ISolutionFiles files)
         {
-            var symbolsBuilder = symbolsPackageBuilderFor(spec, version);
+            _files = files;
+        }
+
+        public IEnumerable<NugetSpec> SpecificationsFor(Solution solution)
+        {
+            var specs = new List<NugetSpec>();
+            _files.ForNuspecs(solution, file =>
+            {
+                var spec = NugetSpec.ReadFrom(file);
+                spec.Publisher = solution;
+
+                specs.Add(spec);
+            });
+
+            return specs;
+        }
+
+        public static PublishingService For(SolutionMode mode)
+        {
+            return new PublishingService(SolutionFiles.For(mode));
+        }
+
+        public void CreateSymbolsPackage(PackageParams ctx)
+        {
+            var symbolsBuilder = symbolsPackageBuilderFor(ctx.Spec, ctx.Version);
             // remove unnecessary files when building the symbols package
             ExcludeFilesForSymbolPackage(symbolsBuilder.Files);
 
@@ -94,7 +95,7 @@ namespace ripple.Model
                 throw new CreateNugetException(symbolsBuilder.Id, true);
             }
 
-            var nupkgSymbolsFileName = Path.Combine(outputPath, "{0}.{1}.symbols.nupkg".ToFormat(spec.Name, version));
+            var nupkgSymbolsFileName = Path.Combine(ctx.OutputPath, "{0}.{1}.symbols.nupkg".ToFormat(ctx.Spec.Name, ctx.Version));
 
             var package = createPackage(symbolsBuilder, nupkgSymbolsFileName);
 
@@ -110,11 +111,11 @@ namespace ripple.Model
             }
         }
 
-        public string CreatePackage(NugetSpec spec, SemanticVersion version, string outputPath, bool createSymbols)
-		{
-			var builder = packageBuilderFor(spec, version);
+        public string CreatePackage(PackageParams ctx)
+        {
+            var builder = packageBuilderFor(ctx.Spec, ctx.Version);
 
-            if (createSymbols)
+            if (ctx.CreateSymbols)
             {
                 ExcludeFilesForLibPackage(builder.Files);
                 if (!builder.Files.Any())
@@ -123,16 +124,16 @@ namespace ripple.Model
                 }
             }
 
-			var nupkgFileName = Path.Combine(outputPath, "{0}.{1}.nupkg".ToFormat(spec.Name, version));
+            var nupkgFileName = Path.Combine(ctx.OutputPath, "{0}.{1}.nupkg".ToFormat(ctx.Spec.Name, ctx.Version));
 
-			var package = createPackage(builder, nupkgFileName);
+            var package = createPackage(builder, nupkgFileName);
 
-            if (createSymbols)
+            if (ctx.CreateSymbols)
             {
-                CreateSymbolsPackage(spec, version, outputPath);
+                CreateSymbolsPackage(ctx);
             }
-		    var issues = package.Validate(Rules);
-            
+            var issues = package.Validate(Rules);
+
             if (issues.Any(x => x.Level == PackageIssueLevel.Error))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -142,63 +143,62 @@ namespace ripple.Model
                 RippleAssert.Fail("Package failed validation");
             }
 
-			return nupkgFileName;
-		}
+            return nupkgFileName;
+        }
 
         public void PublishPackage(string serverUrl, string file, string apiKey)
-		{
+        {
             var packageServer = new PackageServer(serverUrl, "ripple");
-		    var package = new OptimizedZipPackage(file);
+            var package = new OptimizedZipPackage(file);
 
-			RippleLog.Info("Publishing " + file + " with " + apiKey);
+            RippleLog.Info("Publishing " + file + " with " + apiKey);
 
             packageServer.PushPackage(apiKey, package, (int)60.Minutes().TotalMilliseconds);
-		}
+        }
 
-		private IPackage createPackage(PackageBuilder builder, string outputPath)
-		{
-			bool isExistingPackage = File.Exists(outputPath);
-			try
-			{
-				using (Stream stream = File.Create(outputPath))
-				{
-					builder.Save(stream);
-				}
-			}
-			catch(Exception exc)
-			{
-				if (!isExistingPackage && File.Exists(outputPath))
-				{
-					File.Delete(outputPath);
-				}
+        private IPackage createPackage(PackageBuilder builder, string outputPath)
+        {
+            bool isExistingPackage = File.Exists(outputPath);
+            try
+            {
+                using (Stream stream = File.Create(outputPath))
+                {
+                    builder.Save(stream);
+                }
+            }
+            catch (Exception exc)
+            {
+                if (!isExistingPackage && File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
+                }
 
                 RippleAssert.Fail("Error creating package: " + exc.Message);
-			}
+            }
 
-			RippleLog.Info("Created nuget at: " + outputPath);
+            RippleLog.Info("Created nuget at: " + outputPath);
             return new OptimizedZipPackage(outputPath);
-		}
+        }
 
-	    private PackageBuilder symbolsPackageBuilderFor(NugetSpec spec, SemanticVersion version)
-	    {
-	        return packageBuilderFor(spec, version);
-	    }
+        private PackageBuilder symbolsPackageBuilderFor(NugetSpec spec, SemanticVersion version)
+        {
+            return packageBuilderFor(spec, version);
+        }
 
-	    private PackageBuilder packageBuilderFor(NugetSpec spec, SemanticVersion version)
-		{
-		    try
-		    {
+        private PackageBuilder packageBuilderFor(NugetSpec spec, SemanticVersion version)
+        {
+            try
+            {
                 return new PackageBuilder(spec.Filename, NullPropertyProvider.Instance, true)
                 {
                     Version = version
                 };
-		    }
-		    catch (Exception exc)
-		    {
+            }
+            catch (Exception exc)
+            {
                 RippleAssert.Fail("Error creating package: " + exc.Message);
-		        return null;
-		    }
-			
-		}
-	}
+                return null;
+            }
+        }
+    }
 }
