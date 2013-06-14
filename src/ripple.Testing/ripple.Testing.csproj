@@ -67,9 +67,11 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertLogListener.cs" />
     <Compile Include="BuildSolutionTester.cs" />
     <Compile Include="CheckXmlPersistence.cs" />
     <Compile Include="Classic\NuGetSolutionLoaderTester.cs" />
+    <Compile Include="Commands\FindNugetsCommandTester.cs" />
     <Compile Include="Commands\NugetEntryTester.cs" />
     <Compile Include="Commands\ExtractSampleCommandTester.cs" />
     <Compile Include="Commands\finding_nuspecs_by_convention_and_mapping.cs" />

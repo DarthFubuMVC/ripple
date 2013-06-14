@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NuGet;
 using ripple.Model;
 
@@ -9,6 +10,8 @@ namespace ripple.Nuget
 
         IRemoteNuget Find(Dependency query);
         IRemoteNuget FindLatest(Dependency query);
+
+        IEnumerable<IRemoteNuget> FindLatestByName(string idPart);
 
         IPackageRepository Repository { get; }
     }

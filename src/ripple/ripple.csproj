@@ -57,6 +57,7 @@
     <Compile Include="Commands\ConvertCommand.cs" />
     <Compile Include="Commands\DescribeCommand.cs" />
     <Compile Include="Commands\DescribeGraphCommand.cs" />
+    <Compile Include="Commands\FindCommand.cs" />
     <Compile Include="Commands\FixCommand.cs" />
     <Compile Include="Commands\InstallCommand.cs" />
     <Compile Include="Commands\ReplacePackagesConfigCommand.cs" />

@@ -45,7 +45,7 @@ namespace ripple.Testing.Model
             _feed = feed;
             _online = true;
 
-            UseRepository(new StubPackageRepository());
+            UseRepository(new StubPackageRepository(feed.Url));
         }
 
         public StubFeed Add(string name, string version)
@@ -87,6 +87,11 @@ namespace ripple.Testing.Model
             }
 
             return matching.FirstOrDefault(x => x.Version.Version.Equals(version.Version));
+        }
+
+        public override IEnumerable<IRemoteNuget> FindLatestByName(string idPart)
+        {
+            return Nugets.Where(nuget => nuget.Name.Contains(idPart));
         }
 
         protected override IRemoteNuget findLatest(Dependency query)
@@ -156,8 +161,7 @@ namespace ripple.Testing.Model
 	{
 		public FloatingStubFeed(Feed feed) 
 			: base(feed)
-		{
-		}
+		{}
 
 		public IEnumerable<IRemoteNuget> GetLatest()
 		{

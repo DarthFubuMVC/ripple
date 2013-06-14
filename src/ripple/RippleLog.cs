@@ -51,7 +51,6 @@ namespace ripple
         public static void AddFileListener()
         {
             RegisterListener(File);
-            resetLogger();
         }
 
 		public static void Verbose(bool verbose)
@@ -64,6 +63,7 @@ namespace ripple
 		public static void RegisterListener(ILogListener listener)
 		{
 			Listeners.Add(listener);
+            resetLogger();
 		}
 
 		public static void DebugMessage(LogTopic message)

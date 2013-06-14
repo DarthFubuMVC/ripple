@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using FubuCore;
@@ -60,6 +61,14 @@ namespace ripple.Nuget
             }
             
             return new RemoteNuget(package);
+        }
+
+        public override IEnumerable<IRemoteNuget> FindLatestByName(string idPart)
+        {
+            return _repository.GetPackages()
+                .Where(package => package.Id.Contains(idPart) && package.IsLatestVersion)
+                .ToArray()
+                .Select(package => new RemoteNuget(package));
         }
 
         protected override IRemoteNuget findLatest(Dependency query)
