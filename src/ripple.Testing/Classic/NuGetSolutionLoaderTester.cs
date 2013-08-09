@@ -1,5 +1,7 @@
+using FubuCore;
 using FubuTestingSupport;
 using NUnit.Framework;
+using Rhino.Mocks;
 using ripple.Classic;
 using ripple.Model;
 
@@ -104,4 +106,37 @@ namespace ripple.Testing.Classic
 			p2.Dependencies.Find("StructureMap").IsFloat().ShouldBeTrue();
 		}
 	}
+
+    [TestFixture]
+    public class load_adds_feeds
+    {
+        private SolutionConfig theConfig;
+        private Solution theSolution;
+        private Feed theFeed;
+
+        private NuGetSolutionLoader theLoader;
+
+        [SetUp]
+        public void SetUp()
+        {
+            theFeed = new Feed();
+            theConfig = new SolutionConfig
+                {
+                    Feeds = new[] {theFeed}
+                };
+
+            const string rippleConfig = "ripple.config";
+            var fileSystem = MockRepository.GenerateStub<IFileSystem>();
+            fileSystem.Stub(x => x.LoadFromFile<SolutionConfig>(rippleConfig)).Return(theConfig);
+            
+            theLoader = new NuGetSolutionLoader();
+            theSolution = theLoader.LoadFrom(fileSystem, rippleConfig);
+        }
+
+        [Test]
+        public void adds_the_feed_to_solution()
+        {
+            theSolution.Feeds.ShouldContain(theFeed);
+        }
+    }
 }

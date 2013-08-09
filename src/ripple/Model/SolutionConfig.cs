@@ -28,6 +28,7 @@ namespace ripple.Model
         public string FastBuildCommand { get; set; }
 
         private readonly IList<string> _floats = new List<string>();
+        private readonly IList<Feed> _feeds = new List<Feed>();
 
         public void FloatNuget(string nugetName)
         {
@@ -49,6 +50,16 @@ namespace ripple.Model
             {
                 _floats.Clear();
                 _floats.AddRange(value);
+            }
+        }
+
+        public Feed[] Feeds
+        {
+            get { return _feeds.ToArray(); }
+            set
+            {
+                _feeds.Clear();
+                _feeds.AddRange(value);
             }
         }
 

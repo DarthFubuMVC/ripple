@@ -20,6 +20,7 @@ namespace ripple.Classic
 			solution.FastBuildCommand = Config.FastBuildCommand;
 			solution.BuildCommand = Config.BuildCommand;
 			solution.NugetSpecFolder = Config.NugetSpecFolder;
+            solution.AddFeeds(Config.Feeds);
 
 			return solution;
 		}
