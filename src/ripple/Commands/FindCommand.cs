@@ -8,7 +8,7 @@ namespace ripple.Commands
         public string Nuget { get; set; }
     }
 
-    [CommandDescription("Queryies feeds for nugets", Name = "find")]
+    [CommandDescription("Queries feeds for nugets", Name = "find")]
     public class FindNugetsCommand : FubuCommand<FindNugetsInput>
     {
         public override bool Execute(FindNugetsInput input)
