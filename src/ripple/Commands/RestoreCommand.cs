@@ -53,7 +53,6 @@ namespace ripple.Commands
 
 		public override bool Execute(RestoreInput input)
 		{
-            Thread.Sleep(5000);
 
 			var operation = RippleOperation
 			  .For(input)
