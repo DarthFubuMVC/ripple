@@ -31,6 +31,11 @@ namespace ripple.Commands
         [FlagAlias("symbols", 'C')]
         public bool CreateSymbolsFlag { get; set; }
 
+
+        [Description("Override dependencies in the nuspec files to match only ripple dependecies")]
+        [FlagAlias("override-dependencies")]
+        public bool OverrideDependenciesFlag { get; set; }
+
         public IEnumerable<SpecGroup> SpecsFor(Solution solution)
         {
             if (!UpdateDependenciesFlag)

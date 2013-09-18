@@ -78,6 +78,49 @@ namespace ripple.Testing.Integration
             verifyVersion(spec, "Something", "1.0.1.244");
         }
 
+
+        [Test]
+        public void verify_the_dependencies_afer_second_update()
+        {
+            RippleOperation
+                .With(theSolution, false)
+                .Execute<CreatePackagesInput, LocalNugetCommand>(input =>
+                {
+                    input.VersionFlag = "1.0.1.245";
+                    input.UpdateDependenciesFlag = true;
+                });
+
+            var specFile = theSolution.Specifications.Single(x => x.Name == "SomeProject");
+            var spec = NugetSpec.ReadFrom(specFile.Filename);
+
+            verifyVersion(spec, "Bottles", "[1.1.0.255, 2.0.0.0)");
+            verifyVersion(spec, "FubuCore", "1.0.1.244");
+            verifyVersion(spec, "FubuLocalization", "[1.8.0.0, 1.9.0.0)");
+            verifyVersion(spec, "Something", "1.0.1.245");
+        }
+
+        [Test]
+        public void verify_the_dependencies_afer_second_update_with_override()
+        {
+            theSolution.RemoveDependency("Bottles");
+            RippleOperation
+                .With(theSolution, false)
+                .Execute<CreatePackagesInput, LocalNugetCommand>(input =>
+                {
+                    input.VersionFlag = "1.0.1.244";
+                    input.UpdateDependenciesFlag = true;
+                    input.OverrideDependenciesFlag = true;
+                });
+
+            var specFile = theSolution.Specifications.Single(x => x.Name == "SomeProject");
+            var spec = NugetSpec.ReadFrom(specFile.Filename);
+
+            Assert.IsNull(spec.FindDependency("Bottles"));
+            Assert.IsNull(spec.FindDependency("FubuCore"));
+            Assert.IsNull(spec.FindDependency("FubuLocalization"));
+            verifyVersion(spec, "Something", "1.0.1.244");
+        }
+
         private void verifyVersion(NugetSpec spec, string name, string version)
         {
             spec.FindDependency(name).VersionSpec.ToString().ShouldEqual(version);

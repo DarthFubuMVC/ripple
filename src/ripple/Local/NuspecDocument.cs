@@ -57,19 +57,27 @@ namespace ripple.Local
         }
 
         public void AddDependency(NuspecDependency dependency)
-		{
+        {
             var dependencies = _document.XPathSelectElement("//nuspec:dependencies", _xmlNamespaceManager);
+            var element = _document.XPathSelectElement(string.Format("//nuspec:dependencies/nuspec:dependency[@id='{0}']", dependency.Name), _xmlNamespaceManager);
+            if (element == null)
+            {
+                element = new XElement(_xmlns + "dependency");
+                element.SetAttributeValue("id", dependency.Name);
+                dependencies.Add(element);
+            }
 
-            var element = new XElement(_xmlns + "dependency");
-			element.SetAttributeValue("id", dependency.Name);
+            if (dependency.VersionSpec != null)
+            {
+                element.SetAttributeValue("version", dependency.VersionSpec.ToString());
+            }
+            else
+            {
+                if (element.Attribute("version") != null)
+                    element.Attribute("version").Remove();
+            }
 
-			if (dependency.VersionSpec != null)
-			{
-				element.SetAttributeValue("version", dependency.VersionSpec.ToString());
-			}
-
-			dependencies.Add(element);
-		}
+        }
 
 		public void AddPublishedAssembly(string src, string target = "lib")
 		{
@@ -166,6 +174,12 @@ namespace ripple.Local
             }
 
             element.SetAttributeValue("version", version);
+        }
+
+        public void ClearAllDependencies()
+        {
+            var dependencies = _document.XPathSelectElement("//nuspec:dependencies", _xmlNamespaceManager);
+            dependencies.RemoveAll();
         }
     }
 }
