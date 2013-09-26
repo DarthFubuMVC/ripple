@@ -57,30 +57,40 @@ namespace ripple.Local
         }
 
         public void AddDependency(NuspecDependency dependency)
-		{
+        {
             var dependencies = _document.XPathSelectElement("//nuspec:dependencies", _xmlNamespaceManager);
 
+            foreach (XElement dependencyElement in dependencies.Nodes())
+            {
+                if (dependencyElement.Attribute("id").Value == dependency.Name)
+                {
+                    dependencyElement.SetAttributeValue("version", dependency.VersionSpec.ToString());
+                    return;
+                }
+            }
+
             var element = new XElement(_xmlns + "dependency");
-			element.SetAttributeValue("id", dependency.Name);
 
-			if (dependency.VersionSpec != null)
-			{
-				element.SetAttributeValue("version", dependency.VersionSpec.ToString());
-			}
+            element.SetAttributeValue("id", dependency.Name);
 
-			dependencies.Add(element);
-		}
+            if (dependency.VersionSpec != null)
+            {
+                element.SetAttributeValue("version", dependency.VersionSpec.ToString());
+            }
 
-		public void AddPublishedAssembly(string src, string target = "lib")
-		{
-			var files = _document.XPathSelectElement("//files", _xmlNamespaceManager);
+            dependencies.Add(element);
+        }
+
+        public void AddPublishedAssembly(string src, string target = "lib")
+        {
+            var files = _document.XPathSelectElement("//files", _xmlNamespaceManager);
 
             var element = new XElement("file");
-			element.SetAttributeValue("src", src);
-			element.SetAttributeValue("target", target);
+            element.SetAttributeValue("src", src);
+            element.SetAttributeValue("target", target);
 
-			files.Add(element);
-		}
+            files.Add(element);
+        }
 
         public IEnumerable<NuspecDependency> FindDependencies()
         {

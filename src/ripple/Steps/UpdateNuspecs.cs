@@ -30,20 +30,31 @@ namespace ripple.Steps
                 .DetermineDependencies()
                 .Each(dependency =>
                 {
-                    var localDependency = local.Get(dependency);
                     var constraint = Solution.ConstraintFor(dependency);
-                    var version = constraint.SpecFor(localDependency.Version);
+
+                    SemanticVersion semver;
+
+                    if (local.Has(dependency))
+                    {
+                        semver = local.Get(dependency).Version;
+                    }
+                    else
+                    {
+                        semver = dependency.SemanticVersion();
+                    }
+                    var version = constraint.SpecFor(semver);
 
                     var nuspecDep = new NuspecDependency(dependency.Name, version);
 
-					RippleLog.Info("Adding dependency: " + nuspecDep);
+					RippleLog.Info("Adding dependency (NuSpec dependency): " + nuspecDep);
 
                     nuspec.AddDependency(nuspecDep);
                 });
 
+          
             group
-                .Projects
-                .SelectMany(project => project.References)
+               .Projects
+               .SelectMany(project => project.References)
                 .Each(projectRef =>
                 {
                     var target = groups.FirstOrDefault(x => x.Projects.Contains(projectRef));
@@ -55,12 +66,32 @@ namespace ripple.Steps
 
                     var nuspecDep = new NuspecDependency(target.Spec.Name, version);
 
-					RippleLog.Info("Adding dependency: " + nuspecDep);
+					RippleLog.Info("Adding dependency (Ripple dependency): " + nuspecDep);
 
                     nuspec.AddDependency(nuspecDep);
                 });
 
+            group
+             .Projects
+             .Where(project => project.CsProj.ProjectReferences.Any())
+             .SelectMany(project => project.CsProj.ProjectReferences)
+                .Each(csProjectRef=>
+                {
+                
+                  var target = groups.Where(g=>g!=group)
+                        .FirstOrDefault(x => x.Projects.Any(p => p.Name == csProjectRef.Split(' ').First()));
 
+                    if (target == null) return;
+
+                    var constraint = Solution.NuspecSettings.Float;
+                    var version = constraint.SpecFor(new SemanticVersion(input.VersionFlag));
+
+                    var nuspecDep = new NuspecDependency(target.Spec.Name, version);
+
+                    RippleLog.Info("Adding dependency (CsProj dependency): " + nuspecDep);
+
+                    nuspec.AddDependency(nuspecDep);
+                });
 
             nuspec.SaveChanges();
         }
