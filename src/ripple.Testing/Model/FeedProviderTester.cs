@@ -30,28 +30,30 @@ namespace ripple.Testing.Model
         [Test]
         public void fixed_filesystem_feed()
         {
-            theProvider.For(new Feed("file://C:/code/nugets", UpdateMode.Fixed))
+			theProvider.For(new Feed(string.Format("file://{0}/nugets", Path.GetTempPath()), UpdateMode.Fixed))
                        .As<FileSystemNugetFeed>()
                        .Directory
-                       .ShouldEqual(Path.Combine("C:" + Path.DirectorySeparatorChar, "code", "nugets"));
+                       .ShouldEqual(Path.Combine(Path.GetTempPath(), "nugets"));
         }
 
         [Test]
         public void floated_filesystem_feed()
         {
-            theProvider.For(new Feed("file://C:/code/nugets", UpdateMode.Float))
+			theProvider.For(new Feed(string.Format("file://{0}/code/nugets", Path.GetTempPath()), UpdateMode.Float))
                        .As<FloatingFileSystemNugetFeed>()
                        .Directory
-                       .ShouldEqual(Path.Combine("C:" + Path.DirectorySeparatorChar, "code", "nugets"));
+                       .ShouldEqual(Path.Combine(Path.GetTempPath(), "code", "nugets"));
         }
 
         [Test]
         public void filesystem_feed_with_branch()
         {
-            theProvider.For(new Feed("file://C:/code/nugets/{branch}", UpdateMode.Float))
+			var tmpPath = string.Format(@"file://{0}/{{branch}}", Path.GetTempPath());
+
+			theProvider.For(new Feed(tmpPath, UpdateMode.Float))
                        .As<FloatingFileSystemNugetFeed>()
                        .Directory
-                       .ShouldEqual(Path.Combine("C:" + Path.DirectorySeparatorChar, "code", "nugets", "testBranch"));
+					.ShouldEqual(Path.Combine(Path.GetTempPath(), "testBranch"));
         }
 
         [Test]

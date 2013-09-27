@@ -49,7 +49,7 @@ namespace ripple.Runners
                 return new ProcessStartInfo
                 {
                     FileName = "/bin/bash",
-                    Arguments = string.Format("\"{0}\" {1}", location, command.ToFormat(parameters))
+                    Arguments = string.Format("\"{0}\" {1}", location, command.ToFormat(parameters)).TrimEnd()
                 };
             }
 

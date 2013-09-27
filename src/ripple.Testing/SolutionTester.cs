@@ -12,6 +12,7 @@ namespace ripple.Testing
     public class SolutionTester
     {
         [Test]
+        [Platform(Exclude = "Unix,Linux,MacOsX")]
         public void create_process_info_for_full_build()
         {
             var solution = new Solution
@@ -19,7 +20,7 @@ namespace ripple.Testing
                 SourceFolder = "src",
                 BuildCommand = "rake",
                 FastBuildCommand = "rake compile",
-				Directory = "directory1".ToFullPath()
+                Directory = "directory1".ToFullPath()
             };
 
             var processInfo = solution.CreateBuildProcess(false);
@@ -30,15 +31,16 @@ namespace ripple.Testing
         }
 
         [Test]
+        [Platform(Exclude = "Unix,Linux,MacOsX")]
         public void create_process_for_fast_build()
         {
-			var solution = new Solution
-			{
-				SourceFolder = "src",
+            var solution = new Solution
+            {
+                SourceFolder = "src",
                 BuildCommand = "rake",
-				FastBuildCommand = "rake compile",
-				Directory = "directory1".ToFullPath()
-			};
+                FastBuildCommand = "rake compile",
+                Directory = "directory1".ToFullPath()
+            };
 
             var processInfo = solution.CreateBuildProcess(true);
 
@@ -48,17 +50,55 @@ namespace ripple.Testing
         }
 
         [Test]
+        [Platform(Exclude = "Win")]
+        public void create_process_info_for_full_build_on_unix()
+        {
+            var solution = new Solution
+            {
+                SourceFolder = "src",
+                BuildCommand = "rake",
+                FastBuildCommand = "rake compile",
+                Directory = "directory1".ToFullPath()
+            };
+
+            var processInfo = solution.CreateBuildProcess(false);
+
+            processInfo.WorkingDirectory.ShouldEqual("directory1".ToFullPath());
+            processInfo.FileName.ShouldEqual("/bin/bash");
+            processInfo.Arguments.ShouldEqual("\"" + Runner.Rake.Path + "\"");
+        }
+
+        [Test]
+        [Platform(Exclude = "Win")]
+        public void create_process_for_fast_build_on_unix()
+        {
+            var solution = new Solution
+            {
+                SourceFolder = "src",
+                BuildCommand = "rake",
+                FastBuildCommand = "rake compile",
+                Directory = "directory1".ToFullPath()
+            };
+
+            var processInfo = solution.CreateBuildProcess(true);
+
+            processInfo.WorkingDirectory.ShouldEqual("directory1".ToFullPath());
+            processInfo.FileName.ShouldEqual("/bin/bash");
+            processInfo.Arguments.ShouldEqual("\""+ Runner.Rake.Path + "\" compile");
+        }
+
+        [Test]
         public void get_nuget_directory()
         {
             var solution = new Solution
             {
                 SourceFolder = "source",
-				Directory = ".".ToFullPath()
+                Directory = ".".ToFullPath()
             };
 
-	        var storage = new StubNugetStorage();
-	        storage.Add("FubuCore", "0.9.1.37");
-			solution.UseStorage(storage);
+            var storage = new StubNugetStorage();
+            storage.Add("FubuCore", "0.9.1.37");
+            solution.UseStorage(storage);
 
             var project = new Project("something.csproj");
             var dependency = new Dependency("FubuCore", "0.9.1.37");
