@@ -36,7 +36,7 @@ desc "Creates the gem for fubu.exe"
 task :create_gem => [:compile] do
 	require "rubygems/package"
 	include FileUtils
-	cleanDirectory 'bin'	
+	cleanDirectory 'bin'
 	cleanDirectory 'pkg'
 	
 	Dir.mkdir 'bin' unless Dir.exists?('bin')
