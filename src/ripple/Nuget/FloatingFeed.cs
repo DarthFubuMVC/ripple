@@ -9,8 +9,19 @@ namespace ripple.Nuget
 {
     public class FloatingFeed : NugetFeed, IFloatingFeed
     {
-        public const string FindAllLatestCommand =
-            "/Packages()?$filter=IsAbsoluteLatestVersion&$orderby=DownloadCount%20desc,Id&$skip=0&$top=1000";
+        public string FindAllLatestCommand
+        {
+            get
+            {
+                var template = "/Packages()?$filter={0}&$orderby=DownloadCount%20desc,Id&$skip=0&$top=1000";
+
+                if (_stability == NugetStability.ReleasedOnly)
+                    return string.Format(template, "IsLatestVersion");
+
+                return string.Format(template, "IsAbsoluteLatestVersion");
+            }
+        }
+            
 
 		private readonly Lazy<XmlDocument> _feed;
         private bool _dumped;
