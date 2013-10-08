@@ -127,6 +127,7 @@
     <Compile Include="Integration\updating_a_float_dependency_when_a_cached_version_exists.cs" />
     <Compile Include="Integration\valid_solution.cs" />
     <Compile Include="Model\BatchOperationTester.cs" />
+    <Compile Include="Model\BranchDetectorTester.cs" />
     <Compile Include="Model\FeedConnectivityTester.cs" />
     <Compile Include="Model\finding_project_nugets_to_restore.cs" />
     <Compile Include="Model\IgnoreAssemblyReferenceTester.cs" />
