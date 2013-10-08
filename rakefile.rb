@@ -1,3 +1,4 @@
+# vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab
 require 'fuburake'
 
 @solution = FubuRake::Solution.new do |sln|
@@ -33,9 +34,12 @@ end
 
 desc "Creates the gem for fubu.exe"
 task :create_gem => [:compile] do
-    require "rubygems/package"
+	require "rubygems/package"
+	include FileUtils
 	cleanDirectory 'bin';	
 	cleanDirectory 'pkg'
+	mkdir 'bin'
+	mkdir 'pkg'
 	
 	Dir.mkdir 'bin' unless Dir.exists?('bin')
 	Dir.mkdir 'pkg' unless Dir.exists?('pkg')
@@ -74,5 +78,4 @@ task :create_gem => [:compile] do
 	FileUtils.mv "ripple-cli-#{@solution.options[:build_number]}.gem", "pkg/ripple-cli-#{@solution.options[:build_number]}.gem"
 	
 end
-
 
