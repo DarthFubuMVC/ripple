@@ -12,7 +12,7 @@ namespace ripple.Nuget
     {
         private readonly IPackageRepository _repository;
         private readonly string _url;
-        private readonly NugetStability _stability;
+        protected NugetStability _stability;
         private Lazy<bool> _online;
 
         public NugetFeed(string url, NugetStability stability)

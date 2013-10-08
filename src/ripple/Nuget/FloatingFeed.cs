@@ -10,8 +10,17 @@ namespace ripple.Nuget
 {
     public class FloatingFeed : NugetFeed, IFloatingFeed
     {
-        public const string FindAllLatestCommand =
-            "/Packages()?$filter=IsAbsoluteLatestVersion&$orderby=DownloadCount%20desc,Id&$skip={0}&$take=100";
+        public string FindAllLatestCommand
+        {
+            get
+            {
+                if(_stability == NugetStability.ReleasedOnly)
+                    return "/Packages()?$filter=IsLatestVersion&$orderby=DownloadCount%20desc,Id&$skip={0}&$take=100";
+
+                return "/Packages()?$filter=IsAbsoluteLatestVersion&$orderby=DownloadCount%20desc,Id&$skip={0}&$take=100";
+            }
+        }
+            
 
         private bool _dumped;
         private readonly Lazy<IEnumerable<IRemoteNuget>> _latest; 
