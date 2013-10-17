@@ -558,13 +558,17 @@ namespace ripple.Model
 
             var fileName = commands.First();
             ProcessStartInfo info;
+            var arguments = commands.Skip(1).Join(" ");
             if (fileName == "rake")
             {
-                info = Runner.Rake.Info(commands.Skip(1).Join(" "));
+                info = Runner.Rake.Info(arguments);
             }
             else
             {
-                info = new ProcessStartInfo(fileName);
+                info = new ProcessStartInfo(fileName)
+                    {
+                        Arguments = arguments
+                    };
             }
 
             info.WorkingDirectory = Directory;

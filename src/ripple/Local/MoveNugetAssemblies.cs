@@ -54,8 +54,7 @@ namespace ripple.Local
 				RippleLog.Error(ToString(), exc);
 		        throw;
 	        }
-
-            runner.CleanDirectory(packageFolder);
+            Directory.GetDirectories(packageFolder).Each(runner.CleanDirectory);
             _nuget.PublishedAssemblies.Each(x =>
             {
                 var request = new FileCopyRequest{
