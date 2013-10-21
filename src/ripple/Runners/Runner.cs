@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using FubuCore;
@@ -40,6 +40,17 @@ namespace ripple.Runners
             if (!File.Exists(location))
             {
                 ExplodeTo(location);
+            }
+
+
+            // Could we be really smart here and read the #! from the script?
+            if (Platform.IsUnix() && location.EndsWith(".sh", StringComparison.InvariantCulture))
+            {
+                return new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = string.Format("\"{0}\" {1}", location, command.ToFormat(parameters)).TrimEnd()
+                };
             }
 
             return new ProcessStartInfo
