@@ -145,6 +145,7 @@
     <Compile Include="Nuget\INugetFilter.cs" />
     <Compile Include="Nuget\INugetFinder.cs" />
     <Compile Include="Nuget\NoMaxVersionSpecFinder.cs" />
+    <Compile Include="Nuget\NugetCredentialsProvider.cs" />
     <Compile Include="Nuget\NugetProblem.cs" />
     <Compile Include="Nuget\NugetResult.cs" />
     <Compile Include="Model\NulloDependencyStrategy.cs" />

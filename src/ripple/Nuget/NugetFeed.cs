@@ -48,6 +48,11 @@ namespace ripple.Nuget
             {
                 using (var client = new WebClient())
                 {
+                    ICredentials credentials;
+                    if (NugetCredentialsProvider.Instance.TryGetCredentials(_url, out credentials))
+                    {
+                        client.Credentials = credentials;
+                    }
                     using (var stream = client.OpenRead(_url))
                     {
                         return true;

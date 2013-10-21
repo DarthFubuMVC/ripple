@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using FubuCore;
 using FubuCore.Util;
+using NuGet;
 using ripple.Nuget;
 
 namespace ripple.Model
@@ -44,6 +46,15 @@ namespace ripple.Model
             if (feed.Url.StartsWith("file://"))
             {
                 return buildFileSystemFeed(feed);
+            }
+
+            if (!String.IsNullOrEmpty(feed.Username) && !String.IsNullOrEmpty(feed.Password))
+            {
+                if (HttpClient.DefaultCredentialProvider.GetType() != NugetCredentialsProvider.Instance.GetType())
+                {
+                    HttpClient.DefaultCredentialProvider = NugetCredentialsProvider.Instance;
+                }
+                NugetCredentialsProvider.Instance.AddCredentials(feed.Url, new NetworkCredential(feed.Username, feed.Password));
             }
 
             if (feed.Mode == UpdateMode.Fixed)

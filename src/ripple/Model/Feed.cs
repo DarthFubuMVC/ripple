@@ -41,6 +41,10 @@ namespace ripple.Model
 		public UpdateMode Mode { get; set; }
         [XmlAttribute]
         public NugetStability Stability { get; set; }
+        [XmlAttribute]
+        public string Password { get; set; }
+        [XmlAttribute]
+        public string Username { get; set; }
 
 		public INugetFeed GetNugetFeed()
 		{

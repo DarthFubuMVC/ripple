@@ -25,6 +25,12 @@ namespace ripple.Nuget
             var client = new WebClient();
 
             Console.WriteLine("Downloading {0} to {1}", Url, filename);
+		    ICredentials creds;
+            if (NugetCredentialsProvider.Instance.TryGetRootCredentials(Url, out creds))
+            {
+                client.Credentials = creds;
+            }
+            
             client.DownloadFile(Url, filename);
 
             return new NugetFile(filename, mode);
