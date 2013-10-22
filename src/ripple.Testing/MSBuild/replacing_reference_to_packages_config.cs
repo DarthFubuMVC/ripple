@@ -8,7 +8,7 @@ namespace ripple.Testing.MSBuild
     [TestFixture]
     public class replacing_reference_to_packages_config
     {
-        private CsProjFile theCsProj;
+        private ProjFile theProj;
         private string theFilename;
 
         [Test]
@@ -21,16 +21,16 @@ namespace ripple.Testing.MSBuild
 
             new FileSystem().WriteStreamToFile(theFilename, stream);
 
-            theCsProj = new CsProjFile(theFilename, null);
-            theCsProj.UsesPackagesConfig().ShouldBeTrue();
+            theProj = new ProjFile(theFilename, null);
+            theProj.UsesPackagesConfig().ShouldBeTrue();
 
-            theCsProj.ConvertToRippleDependenciesConfig();
-            theCsProj.Write();
+            theProj.ConvertToRippleDependenciesConfig();
+            theProj.Write();
 
-            theCsProj = null;
-            theCsProj = new CsProjFile(theFilename, null);
+            theProj = null;
+            theProj = new ProjFile(theFilename, null);
 
-            theCsProj.UsesPackagesConfig().ShouldBeFalse();
+            theProj.UsesPackagesConfig().ShouldBeFalse();
         }
     }
 }

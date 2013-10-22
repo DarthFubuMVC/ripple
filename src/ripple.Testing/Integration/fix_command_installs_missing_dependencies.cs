@@ -77,8 +77,8 @@ namespace ripple.Testing.Integration
 		{
 			var project = theSolution.FindProject("Test");
 
-			project.CsProj.References.Any(x => x.Name == "Bottles").ShouldBeTrue();
-			project.CsProj.References.Any(x => x.Name == "FubuCore").ShouldBeTrue();
+			project.Proj.References.Any(x => x.Name == "Bottles").ShouldBeTrue();
+			project.Proj.References.Any(x => x.Name == "FubuCore").ShouldBeTrue();
 		}
 
 		[Test]

@@ -13,9 +13,9 @@ namespace ripple.Commands
 
                 solution.EachProject(project =>
                 {
-                    if (project.CsProj.UsesPackagesConfig())
+                    if (project.Proj.UsesPackagesConfig())
                     {
-                        project.CsProj.ConvertToRippleDependenciesConfig();
+                        project.Proj.ConvertToRippleDependenciesConfig();
                         save = true;
                     }
                 });

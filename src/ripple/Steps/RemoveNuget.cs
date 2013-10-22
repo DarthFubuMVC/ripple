@@ -46,7 +46,7 @@ namespace ripple.Steps
             var assemblySet = new FileSet { Include = "*.dll" };
 
             var files = new FileSystem().FindFiles(localFile, assemblySet);
-            project.CsProj.RemoveReferences(files);
+            project.Proj.RemoveReferences(files);
         }
     }
 }

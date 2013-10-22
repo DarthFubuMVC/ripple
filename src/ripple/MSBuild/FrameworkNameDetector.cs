@@ -10,9 +10,9 @@ namespace ripple.MSBuild
         public const string DefaultIdentifier = ".NETFramework";
         public const string DefaultFrameworkVersion = "v4.0";
 
-        public static FrameworkName Detect(CsProjFile project)
+        public static FrameworkName Detect(ProjFile project)
         {
-            var groups = project.Document.XPathSelectElements("tns:PropertyGroup", CsProjFile.Manager).ToArray();
+            var groups = project.Document.XPathSelectElements("tns:PropertyGroup", ProjFile.Manager).ToArray();
 
             var identifier = groups.Get("TargetFrameworkIdentifier", DefaultIdentifier);
             var versionString = groups.Get("TargetFrameworkVersion", DefaultFrameworkVersion);

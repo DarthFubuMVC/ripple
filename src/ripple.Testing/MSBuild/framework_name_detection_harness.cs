@@ -13,7 +13,7 @@ namespace ripple.Testing.MSBuild
             get
             {
                 var element = XElement.Parse(theXml);
-                var project = CsProjFile.For(element);
+                var project = ProjFile.For(element);
 
                 return FrameworkNameDetector.Detect(project);
             }

@@ -53,7 +53,7 @@ namespace ripple.MSBuild
                 var assemblies = package.AssemblyReferences;
                 if (assemblies == null) return;
 
-                project.CsProj.AddAssemblies(dep, assemblies);
+                project.Proj.AddAssemblies(dep, assemblies);
             });
         }
     }

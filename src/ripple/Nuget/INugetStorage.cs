@@ -55,7 +55,7 @@ namespace ripple.Nuget
         public void Write(Project project)
         {
             _strategy.Write(project);
-            project.CsProj.Write();
+            project.Proj.Write();
         }
 
         public void Reset(Solution solution)

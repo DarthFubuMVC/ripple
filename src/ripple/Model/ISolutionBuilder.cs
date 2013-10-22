@@ -35,12 +35,12 @@ namespace ripple.Model
 
             solution.EachProject(project =>
             {
-                if (!project.HasCsProjFile())
+                if (!project.HasProjFile())
                 {
                     return;
                 }
 
-                var references = project.CsProj.ProjectReferences;
+                var references = project.Proj.ProjectReferences;
                 references.Each(r =>
                 {
                     var projectRef = solution.FindProject(r);

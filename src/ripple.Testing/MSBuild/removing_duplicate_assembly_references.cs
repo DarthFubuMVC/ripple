@@ -9,7 +9,7 @@ namespace ripple.Testing.MSBuild
 	[TestFixture]
 	public class removing_duplicate_assembly_references
 	{
-		private CsProjFile theCsProj;
+		private ProjFile theProj;
 		private string theFilename;
 
 		[SetUp]
@@ -22,9 +22,9 @@ namespace ripple.Testing.MSBuild
 
 			new FileSystem().WriteStreamToFile(theFilename, stream);
 
-			theCsProj = new CsProjFile(theFilename, null);
+			theProj = new ProjFile(theFilename, null);
 
-			theCsProj
+			theProj
 				.References
 				.ShouldHaveTheSameElementKeysAs(new[]
 				{
@@ -38,19 +38,19 @@ namespace ripple.Testing.MSBuild
 					"System.Xml"
 				}, x => x.Name);
 
-			theCsProj.RemoveDuplicateReferences();
-			theCsProj.Write();
+			theProj.RemoveDuplicateReferences();
+			theProj.Write();
 
-			theCsProj = null;
-			theCsProj = new CsProjFile(theFilename, null);
+			theProj = null;
+			theProj = new ProjFile(theFilename, null);
 		}
 
 		[Test]
 		public void removes_by_matching_on_just_the_assembly_name()
 		{
-			theCsProj.FindReferenceNodes().Count().ShouldNotEqual(0);
+			theProj.FindReferenceNodes().Count().ShouldNotEqual(0);
 
-			theCsProj
+			theProj
 				.References
 				.ShouldHaveTheSameElementKeysAs(new[]
 				{
@@ -68,7 +68,7 @@ namespace ripple.Testing.MSBuild
 	[TestFixture]
 	public class removing_duplicate_assembly_references_2
 	{
-		private CsProjFile theCsProj;
+		private ProjFile theProj;
 		private string theFilename;
 
 		[SetUp]
@@ -81,9 +81,9 @@ namespace ripple.Testing.MSBuild
 
 			new FileSystem().WriteStreamToFile(theFilename, stream);
 
-			theCsProj = new CsProjFile(theFilename, null);
+			theProj = new ProjFile(theFilename, null);
 
-			theCsProj
+			theProj
 				.References
 				.ShouldHaveTheSameElementKeysAs(new[]
 				{
@@ -119,19 +119,19 @@ namespace ripple.Testing.MSBuild
 					"System.Xml.Linq"
 				}, x => x.Name);
 
-			theCsProj.RemoveDuplicateReferences();
-			theCsProj.Write();
+			theProj.RemoveDuplicateReferences();
+			theProj.Write();
 
-			theCsProj = null;
-			theCsProj = new CsProjFile(theFilename, null);
+			theProj = null;
+			theProj = new ProjFile(theFilename, null);
 		}
 
 		[Test]
 		public void removes_by_matching_on_just_the_assembly_name()
 		{
-			theCsProj.FindReferenceNodes().Count().ShouldNotEqual(0);
+			theProj.FindReferenceNodes().Count().ShouldNotEqual(0);
 
-			theCsProj
+			theProj
 				.References
 				.ShouldHaveTheSameElementKeysAs(new[]
 				{

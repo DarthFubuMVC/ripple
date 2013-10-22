@@ -73,13 +73,13 @@ namespace ripple.Steps
 
             group
              .Projects
-             .Where(project => project.CsProj.ProjectReferences.Any())
-             .SelectMany(project => project.CsProj.ProjectReferences)
-                .Each(csProjectRef=>
+             .Where(project => project.Proj.ProjectReferences.Any())
+             .SelectMany(project => project.Proj.ProjectReferences)
+                .Each(projectRef=>
                 {
                 
                   var target = groups.Where(g=>g!=group)
-                        .FirstOrDefault(x => x.Projects.Any(p => p.Name == csProjectRef.Split(' ').First()));
+                        .FirstOrDefault(x => x.Projects.Any(p => p.Name == projectRef.Split(' ').First()));
 
                     if (target == null) return;
 
@@ -88,7 +88,7 @@ namespace ripple.Steps
 
                     var nuspecDep = new NuspecDependency(target.Spec.Name, version);
 
-                    RippleLog.Info("Adding dependency (CsProj dependency): " + nuspecDep);
+                    RippleLog.Info("Adding dependency (Proj dependency): " + nuspecDep);
 
                     nuspec.AddDependency(nuspecDep);
                 });

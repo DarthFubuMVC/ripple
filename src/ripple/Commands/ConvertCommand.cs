@@ -52,9 +52,9 @@ namespace ripple.Commands
 			{
 			    x.RemoveDuplicateReferences();
 
-                if (x.CsProj.UsesPackagesConfig())
+                if (x.Proj.UsesPackagesConfig())
                 {
-                    x.CsProj.ConvertToRippleDependenciesConfig();
+                    x.Proj.ConvertToRippleDependenciesConfig();
                 }
 			});
 

@@ -8,7 +8,7 @@ namespace ripple.Testing.MSBuild
 {
     public class reading_project_references
     {
-        private CsProjFile theCsProj;
+        private ProjFile theProj;
 		private string theFilename;
 
         [SetUp]
@@ -21,7 +21,7 @@ namespace ripple.Testing.MSBuild
 
             new FileSystem().WriteStreamToFile(theFilename, stream);
 
-            theCsProj = new CsProjFile(theFilename, null);
+            theProj = new ProjFile(theFilename, null);
         }
 
         [TearDown]
@@ -33,7 +33,7 @@ namespace ripple.Testing.MSBuild
         [Test]
         public void verify_the_references()
         {
-            theCsProj.ProjectReferences.ShouldHaveTheSameElementsAs("FubuCore", "FubuTestingSupport");
+            theProj.ProjectReferences.ShouldHaveTheSameElementsAs("FubuCore", "FubuTestingSupport");
         }
     }
 }

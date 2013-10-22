@@ -62,10 +62,10 @@ namespace ripple.Model
 
         public void ForProjects(Solution solution, Action<string> action)
         {
-            var csProjSet = new FileSet { Include = "*.csproj" };
+            var projSet = new FileSet { Include = "*.csproj;*.vbproj;*.fsproj" };
             var targetDir = Path.Combine(solution.Directory, solution.SourceFolder);
 
-            _fileSystem.FindFiles(targetDir, csProjSet).Each(action);
+            _fileSystem.FindFiles(targetDir, projSet).Each(action);
         }
 
         public void ForNuspecs(Solution solution, Action<string> action)

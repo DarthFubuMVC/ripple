@@ -11,7 +11,7 @@ namespace ripple.Model
     {
         private readonly DependencyCollection _dependencies = new DependencyCollection();
         private readonly IList<Project> _references = new List<Project>();
-        private readonly Lazy<CsProjFile> _csProj;
+        private readonly Lazy<ProjFile> _proj;
 
         public Project(string filePath)
         {
@@ -19,17 +19,17 @@ namespace ripple.Model
             Name = Path.GetFileNameWithoutExtension(filePath);
             Directory = filePath.DirectoryPath();
 
-            _csProj = new Lazy<CsProjFile>(() => new CsProjFile(filePath, Solution));
+            _proj = new Lazy<ProjFile>(() => new ProjFile(filePath, Solution));
         }
 
         public string Name { get; private set; }
         public string Directory { get; private set; }
         public string FilePath { get; private set; }
-        public CsProjFile CsProj { get { return _csProj.Value; } }
+        public ProjFile Proj { get { return _proj.Value; } }
         public Solution Solution { get; set; }
 
         // Mostly for testing
-        public bool HasCsProjFile()
+        public bool HasProjFile()
         {
             return File.Exists(FilePath);
         }
@@ -87,7 +87,7 @@ namespace ripple.Model
 
         public void RemoveDuplicateReferences()
         {
-            CsProj.RemoveDuplicateReferences();
+            Proj.RemoveDuplicateReferences();
         }
 
         public void Describe(Description description)
