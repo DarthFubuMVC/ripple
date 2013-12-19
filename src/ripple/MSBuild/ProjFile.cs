@@ -182,8 +182,7 @@ namespace ripple.MSBuild
 
         public void Write()
         {
-          // DH: 
-          if (_references.IsValueCreated)
+            if (_references.IsValueCreated)
             {
                 var nodes = FindReferenceNodes().ToList();
                 foreach (var node in nodes)
