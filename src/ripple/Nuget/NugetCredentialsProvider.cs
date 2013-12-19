@@ -49,5 +49,9 @@ namespace ripple.Nuget
             credentials = null;
             return false;
         }
+
+        public ICredentials GetCredentials(Uri uri, IWebProxy proxy, CredentialType credentialType) {
+          throw new NotImplementedException();
+        }
     }
 }
