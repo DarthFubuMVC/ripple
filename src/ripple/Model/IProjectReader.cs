@@ -33,7 +33,12 @@ namespace ripple.Model
 
 		public static IProjectReader Basic()
 		{
-			return new ProjectReader(new IDependencyStrategy[] { new NuGetDependencyStrategy(), new RippleDependencyStrategy(), new NulloDependencyStrategy() });
+			return new ProjectReader(new IDependencyStrategy[] { 
+        new NuGetDependencyStrategy(), 
+        new RippleDependencyStrategy()
+        // DH: Creates bug that no dependecies are loaded.
+        //, new NulloDependencyStrategy() 
+      });
 		}
 	}
 }
