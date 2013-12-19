@@ -67,7 +67,7 @@ namespace ripple.Model
 			var dependencies = new StringBuilder();
 			project.Dependencies.Each(dependency => { dependencies.AppendLine(dependency.Name); count++; } );
       
-      RippleLog.Debug(string.Format("Saving Dependency file for project {0} ({1})", project.Name, count));
+      RippleLog.Debug(string.Format("Saving Dependency file for project {0} ({1} dependencies)", project.Name, count));
 
 			_fileSystem.WriteStringToFile(FileFor(project), dependencies.ToString());
 		}
