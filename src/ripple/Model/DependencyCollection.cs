@@ -86,6 +86,8 @@ namespace ripple.Model
 
         public Dependency Find(string name)
         {
+
+          try {
             var topLevel = _dependencies.SingleOrDefault(x => x.MatchesName(name));
             if (topLevel != null)
             {
@@ -95,6 +97,15 @@ namespace ripple.Model
             return _children
                 .SelectMany(x => x._dependencies)
                 .FirstOrDefault(x => x.MatchesName(name));
+          } 
+          catch (InvalidOperationException)
+          {
+            var dependencies = _dependencies.Where(x => x.Name.EqualsIgnoreCase(name)).Select(x => x.ToString()).Join("\n");
+            RippleLog.Info("Found multiple copies of {0}: \n{1}".ToFormat(name, dependencies));
+
+            throw;
+          }
+
         }
 
         public DependencyValidationResult Validate()
