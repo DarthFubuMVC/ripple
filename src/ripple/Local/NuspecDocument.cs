@@ -111,6 +111,11 @@ namespace ripple.Local
                     var assemblyReference = element.Attribute("src").Value;
                     assemblyReference = assemblyReference.Replace('\\', Path.DirectorySeparatorChar);
 
+                    if (Platform.IsUnix ())
+                    {
+                        assemblyReference = assemblyReference.Replace ('\\', '/');
+                    }
+
                     yield return new PublishedAssembly(nuspecDirectory, assemblyReference, path);
                 }
             }

@@ -29,16 +29,6 @@ Global
 		{0DB48F71-0998-4421-8EB5-7B8020BF37B0}.Release|Mixed Platforms.Build.0 = Release|x86
 		{0DB48F71-0998-4421-8EB5-7B8020BF37B0}.Release|x86.ActiveCfg = Release|x86
 		{0DB48F71-0998-4421-8EB5-7B8020BF37B0}.Release|x86.Build.0 = Release|x86
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|Any CPU.Build.0 = Release|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|x86.ActiveCfg = Release|Any CPU
 		{5F6B1A70-3A36-4A4D-90F5-884B7413A79E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5F6B1A70-3A36-4A4D-90F5-884B7413A79E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F6B1A70-3A36-4A4D-90F5-884B7413A79E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -49,6 +39,39 @@ Global
 		{5F6B1A70-3A36-4A4D-90F5-884B7413A79E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5F6B1A70-3A36-4A4D-90F5-884B7413A79E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5F6B1A70-3A36-4A4D-90F5-884B7413A79E}.Release|x86.ActiveCfg = Release|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{734921D6-8BB4-4B57-9D5A-ACF9BD515D49}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = ripple\ripple.csproj
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.FileWidth = 120
+		$1.EolMarker = Windows
+		$1.inheritsSet = VisualStudio
+		$1.inheritsScope = text/plain
+		$1.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $2
+		$2.ElseIfNewLinePlacement = SameLine
+		$2.AfterDelegateDeclarationParameterComma = True
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/x-csharp
+		$2.scope = text/x-csharp
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.inheritsSet = VisualStudio
+		$3.inheritsScope = text/plain
+		$3.scope = text/plain
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
