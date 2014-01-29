@@ -36,10 +36,8 @@ desc "Creates the gem for fubu.exe"
 task :create_gem => [:compile] do
 	require "rubygems/package"
 	include FileUtils
-	cleanDirectory 'bin';	
+	cleanDirectory 'bin'	
 	cleanDirectory 'pkg'
-	mkdir 'bin'
-	mkdir 'pkg'
 	
 	Dir.mkdir 'bin' unless Dir.exists?('bin')
 	Dir.mkdir 'pkg' unless Dir.exists?('pkg')
@@ -78,4 +76,3 @@ task :create_gem => [:compile] do
 	FileUtils.mv "ripple-cli-#{@solution.options[:build_number]}.gem", "pkg/ripple-cli-#{@solution.options[:build_number]}.gem"
 	
 end
-
