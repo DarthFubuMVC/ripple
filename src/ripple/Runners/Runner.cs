@@ -42,15 +42,16 @@ namespace ripple.Runners
                 ExplodeTo(location);
             }
 
-            if (Platform.IsUnix ()) 
+
+            // Could we be really smart here and read the #! from the script?
+            if (Platform.IsUnix() && location.EndsWith(".sh", StringComparison.InvariantCulture))
             {
                 return new ProcessStartInfo
                 {
                     FileName = "/bin/bash",
-                    Arguments = location + " " + command.ToFormat(parameters)
+                    Arguments = string.Format("\"{0}\" {1}", location, command.ToFormat(parameters)).TrimEnd()
                 };
             }
-
 
             return new ProcessStartInfo
             {
