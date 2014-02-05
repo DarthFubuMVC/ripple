@@ -43,7 +43,7 @@ namespace ripple.Nuget
             }
             catch (InvalidOperationException)
             {
-                var dependencies = _dependencies.Where(x => x.Name.EqualsIgnoreCase(name)).Select(x => x.FileName).Join(",");
+                var dependencies = _dependencies.Where(x => x.Name.EqualsIgnoreCase(name)).Select(x => x.FileName).Join("\n");
                 RippleLog.Info("Found multiple copies of {0}: {1}".ToFormat(name, dependencies));
 
                 throw;

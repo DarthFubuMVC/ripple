@@ -41,6 +41,7 @@ namespace ripple.MSBuild
 
         private void fixProject(Project project)
         {
+          RippleLog.Debug(" == Fixing Project " + project.Name);
             project.Dependencies.Each(dep =>
             {
                 var package = _packages[dep.Name];

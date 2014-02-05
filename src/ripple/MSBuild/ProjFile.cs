@@ -97,7 +97,35 @@ namespace ripple.MSBuild
 
         public Reference FindReference(string name)
         {
-            return _references.Value.FirstOrDefault(x => x.Name == name);
+          // DH: Remove dupes, usually with full version name (NuGet style)
+          var r = _references.Value.Where( x => x.Name == name );
+          if( r.Count() > 1 ) {
+ 
+            // Select the one with shortest package name (without version)
+            var hintPath = r.Select(new Func<Reference, string>(x => {
+              var s = x.HintPath.IndexOf("packages\\");
+              if( s == -1 )
+                return x.HintPath;
+              else s += 9;
+
+              var e = x.HintPath.IndexOf('\\', s);
+              if( e == -1 )
+                return x.HintPath;
+              else e++;
+              
+              return x.HintPath.Substring(s, e-s);
+ 
+            }) ).OrderBy( y => y.Length ).First();
+
+            int c = 0;
+            foreach( var @ref in r.ToArray() )
+              if( !@ref.HintPath.Contains(hintPath) || c == 1 )
+                _references.Value.Remove(@ref);
+              else c++;
+
+            return _references.Value.Where(x => x.Name == name ).FirstOrDefault();
+
+          } else return r.FirstOrDefault();
         }
 
         public bool RemoveReference(string name)
@@ -169,7 +197,7 @@ namespace ripple.MSBuild
                 {
 
                     var node = new XElement(_xmlns + "Reference");
-                    node.SetAttributeValue("Include", reference.Name);
+                    node.SetAttributeValue("Include", reference.NameWithoutVersion);
 
                     if (reference.HintPath.IsNotEmpty())
                     {

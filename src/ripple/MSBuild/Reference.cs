@@ -5,9 +5,15 @@ namespace ripple.MSBuild
 {
     public class Reference
     {
-	    public string Name { get; set; }
+	      public string Name { get; set; }
         public string HintPath { get; set; }
         public string Aliases { get; set; }
+
+        public string NameWithoutVersion { 
+          get { 
+            return Name.Split(',').First().Trim();
+          }
+        }
 
         public override string ToString()
         {

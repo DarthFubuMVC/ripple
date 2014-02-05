@@ -381,7 +381,11 @@ namespace ripple.Model
 
         public Project FindProject(string name)
         {
-            return _projects.SingleOrDefault(x => x.Name.EqualsIgnoreCase(name));
+          try {
+            return _projects.FirstOrDefault(x => x.Name.EqualsIgnoreCase(name));
+          } catch(Exception e) { 
+            throw new Exception("Failed to find project " + name, e);
+          }
         }
 
         public void IgnoreFile(string file)

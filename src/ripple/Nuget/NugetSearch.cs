@@ -47,7 +47,16 @@ namespace ripple.Nuget
         public Task<NugetResult> FindDependency(Solution solution, Dependency dependency)
         {
             var finder = _finders.First.Value;
-            var parent = Task.Factory.StartNew(() => finder.Find(solution, dependency), TaskCreationOptions.AttachedToParent);
+            var parent = Task.Factory.StartNew( new Func<ripple.Nuget.NugetResult>(() => 
+              {
+                try {
+                  return finder.Find(solution, dependency);
+                } catch(Exception e) {
+                  RippleLog.Debug(e.Message);
+                  throw e;
+                }
+              }) 
+              , TaskCreationOptions.AttachedToParent);
             var task = fill(solution, dependency, parent, _finders.First);
 
             return task.ContinueWith(inner =>
