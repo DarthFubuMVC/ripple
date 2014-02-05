@@ -56,6 +56,7 @@ namespace ripple.Commands
             var operation = RippleOperation
               .For(input)
               .Step<DownloadMissingNugets>()
+              .Step<ExplodeSourceOnlyPackages>()
               .Step<ExplodeDownloadedNugets>()
               .Step<ProcessDirectives>();
 

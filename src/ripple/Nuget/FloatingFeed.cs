@@ -88,7 +88,7 @@ namespace ripple.Nuget
 
         protected override IRemoteNuget findLatest(Dependency query)
         {
-            var floatedResult = GetLatest().SingleOrDefault(x => query.MatchesName(x.Name));
+            var floatedResult = GetLatest().FirstOrDefault(x => query.MatchesName(x.Name));
             RippleLog.Debug("Looking for " + query + " in " + Url + "; Found " + floatedResult);
             if (floatedResult != null && query.Mode == UpdateMode.Fixed && floatedResult.IsUpdateFor(query))
             {

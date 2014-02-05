@@ -72,6 +72,44 @@ namespace ripple.Nuget
             return ExplodedDirectory(solution.PackagesDirectory());
         }
 
+        public void ExplodeSourcesTo(string directory)
+        {
+            RippleLog.Info("Exploding source only package {0} to {1}".ToFormat(Name,directory));
+            
+            var fileSystem = new FileSystem();
+            fileSystem.CreateDirectory(directory);
+            fileSystem.ForceClean(directory);
+
+            var package = new ZipPackage(_path);
+
+            package.GetFiles().Each(file =>
+            {
+                if (!file.Path.Contains("content\\"))
+                {
+                    RippleLog.Info("File {0} is not in the content folder and will be skipped".ToFormat(file.Path));
+                    return;
+                }
+
+                var relativePath = file.Path.Replace("content\\", "");
+
+
+                var target = directory.AppendPath(relativePath);
+                fileSystem.CreateDirectory(target.ParentDirectory());
+
+                using (var stream = new FileStream(target, FileMode.Create, FileAccess.Write))
+                {
+                    file.GetStream().CopyTo(stream);
+                }
+            });
+        }
+
+        public bool IsSourceOnlyPackage()
+        {
+            var name = Name.ToLower();
+
+            return name.EndsWith(".sources") || name.EndsWith("-codeonly");
+        }
+
         public IPackage ExplodeTo(string directory)
         {
             var explodedDirectory = ExplodedDirectory(directory);

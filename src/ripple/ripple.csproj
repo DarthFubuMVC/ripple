@@ -225,6 +225,7 @@
     <Compile Include="Steps\CreatePackages.cs" />
     <Compile Include="Steps\DownloadedNugets.cs" />
     <Compile Include="Steps\DownloadMissingNugets.cs" />
+    <Compile Include="Steps\ExplodeSourceOnlyPackages.cs" />
     <Compile Include="Steps\FloatDependency.cs" />
     <Compile Include="Steps\MissingNugetReport.cs" />
     <Compile Include="Steps\NugetOperation.cs" />

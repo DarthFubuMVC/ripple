@@ -27,6 +27,7 @@ namespace ripple.Steps
             });
         }
 
+
         public void Describe(Description description)
         {
             description.ShortDescription = "Explode nugets at " + Solution.PackagesDirectory();

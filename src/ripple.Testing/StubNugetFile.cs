@@ -1,3 +1,4 @@
+using System;
 using FubuCore;
 using NuGet;
 using ripple.Model;
@@ -43,5 +44,15 @@ namespace ripple.Testing
 		{
 			return solution.PackagesDirectory().AppendPath(Name);
 		}
+
+	    public void ExplodeSourcesTo(string directory)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public bool IsSourceOnlyPackage()
+	    {
+	        return false;
+	    }
 	}
 }
