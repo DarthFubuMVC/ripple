@@ -15,9 +15,20 @@ namespace ripple.Nuget
             get
             {
                 if(Stability == NugetStability.ReleasedOnly)
-                    return "/Packages()?$filter=IsLatestVersion&$orderby=DownloadCount%20desc,Id&$skip={0}&$top=100";
+                    return "/Packages()?$filter=IsLatestVersion&$orderby=DownloadCount";
 
-                return "/Packages()?$filter=IsAbsoluteLatestVersion&$orderby=DownloadCount%20desc,Id&$skip={0}&$top=100";
+                return "/Packages()?$filter=IsAbsoluteLatestVersion&$orderby=DownloadCount";
+            }
+        }
+
+        public string FindLatestCommand
+        {
+            get
+            {
+                if (Stability == NugetStability.ReleasedOnly)
+                    return "/Packages()?$filter=(Id eq '{0}') and IsLatestVersion";
+
+                return "/Packages()?$filter=(Id eq '{0}') and IsAbsoluteLatestVersion";
             }
         }
             
@@ -42,7 +53,9 @@ namespace ripple.Nuget
 
             var document = new XmlDocument();
             document.LoadXml(text);
-
+            var ns = new XmlNamespaceManager(document.NameTable);
+            ns.AddNamespace("atom", "http://www.w3.org/2005/Atom");
+            document.SelectSingleNode("//atom:feed", ns);
             return new NugetXmlFeed(document).ReadAll(this).ToArray();
         }
 
@@ -54,15 +67,35 @@ namespace ripple.Nuget
         private IEnumerable<IRemoteNuget> getLatest()
         {
             var all = new List<IRemoteNuget>();
-            var page = 1;
-            var results = loadLatestFeed(page);
-            all.AddRange(results);
-            while (results.Count() == 100)
+
+            const string atomXmlNamspace = "http://www.w3.org/2005/Atom";
+            var url = Url + FindAllLatestCommand;
+            var client = new WebClient();
+
+            XmlNode nextNode;
+            do
             {
-                page++;
-                results = loadLatestFeed(page);
-                all.AddRange(results);
-            }
+                RippleLog.Debug("Retrieving latest from " + url);
+
+                var text = client.DownloadString(url);
+                var document = new XmlDocument();
+                document.LoadXml(text);
+                all.AddRange(new NugetXmlFeed(document).ReadAll(this));
+
+                var ns = new XmlNamespaceManager(document.NameTable);
+                ns.AddNamespace("atom", atomXmlNamspace);
+                nextNode = document.SelectSingleNode("//atom:link[@rel='next']", ns);
+
+                if (nextNode != null && nextNode.Attributes != null && nextNode.Attributes["href"] != null)
+                {
+                    url = nextNode.Attributes["href"].Value;
+                }
+                else
+                {
+                    url = string.Empty;
+                }
+
+            } while (!string.IsNullOrEmpty(url));
 
             return all;
         }
@@ -78,7 +111,16 @@ namespace ripple.Nuget
 
         protected override IRemoteNuget findLatest(Dependency query)
         {
-            var floatedResult = GetLatest().SingleOrDefault(x => query.MatchesName(x.Name));
+            var client = new WebClient();
+
+            var url = string.Format(Url + FindLatestCommand, query.Name);
+            var text = client.DownloadString(url);
+            var document = new XmlDocument();
+            document.LoadXml(text);
+
+            var feed = (new NugetXmlFeed(document).ReadAll(this));
+
+            var floatedResult = feed.SingleOrDefault(x => query.MatchesName(x.Name));
             if (floatedResult != null && query.Mode == UpdateMode.Fixed && floatedResult.IsUpdateFor(query))
             {
                 return null;
