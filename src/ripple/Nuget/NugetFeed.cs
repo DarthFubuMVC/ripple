@@ -77,8 +77,9 @@ namespace ripple.Nuget
             }
 
             var versionSpec = new VersionSpec(version);
+            
             var package = repository
-                .FindPackages(query.Name, versionSpec, query.DetermineStability(Stability) == NugetStability.Anything, true)
+                .FindPackages(query.Name, query.IsFloat()? null: versionSpec, query.DetermineStability(Stability) == NugetStability.Anything, true)
                 .OrderByDescending(x => x.Version)
                 .FirstOrDefault();
 

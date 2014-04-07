@@ -36,5 +36,17 @@ namespace ripple.Testing.Nuget
 
             task.Result.Nuget.Version.ShouldEqual(new SemanticVersion("1.0.1"));
         }
+
+        [Test]
+        public void restore_solution_dependencies()
+        {
+            var notExistingVersion = new SemanticVersion("1.0.0");
+            var fixedFeed = new NugetFeed(Feed.NuGetV2.Url, NugetStability.ReleasedOnly);
+            fixedFeed.Find(new Dependency("Newtonsoft.Json", notExistingVersion, UpdateMode.Float)
+            {
+                NugetStability = NugetStability.ReleasedOnly,
+                Mode = UpdateMode.Float
+            }).ShouldNotBeNull();
+        }
     }
 }
