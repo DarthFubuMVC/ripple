@@ -149,7 +149,7 @@ namespace ripple.MSBuild
 
                 var nugetDir = _solution.NugetFolderFor(dep.Name);
                 var assemblyPath = nugetDir.AppendPath(assem.Path);
-                var hintPath = assemblyPath.PathRelativeTo(_filename.ParentDirectory());
+                var hintPath = assemblyPath.PathRelativeTo(Path.GetFullPath(_filename.ParentDirectory()));
 
                 if (AddReference(assemblyName, hintPath) == ReferenceStatus.Changed)
                 {
