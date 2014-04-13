@@ -29,7 +29,7 @@ namespace ripple.Testing
         [Test]
         public void description_for_branch()
         {
-            BranchDetector.Stub(() => true);
+            BranchDetector.Stub(() => true, () => true);
             BranchDetector.Stub(() => "test");
 
             var operation = new RippleOperation(new Solution {Name = "Test"}, new SolutionInput(), new RippleStepRunner(new FileSystem()));
@@ -45,7 +45,7 @@ namespace ripple.Testing
         [Test]
         public void description_for_no_branch()
         {
-            BranchDetector.Stub(() => false);
+            BranchDetector.Stub(() => false, () => false);
             BranchDetector.Stub(() => "test");
 
             var operation = new RippleOperation(new Solution { Name = "Test" }, new SolutionInput(), new RippleStepRunner(new FileSystem()));

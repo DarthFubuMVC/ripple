@@ -8,7 +8,8 @@ namespace ripple.Model
     {
         private static Lazy<string> _current;
         private static Func<string> _detectCurrent;
-        private static Func<bool> _canDetect; 
+        private static Func<bool> _canDetectGit;
+        private static Func<bool> _canDetectHg; 
  
         static BranchDetector()
         {
@@ -17,17 +18,24 @@ namespace ripple.Model
         
         public static void Live()
         {
-            _canDetect = () => Directory.Exists(GitDirectory);
+            _canDetectGit = () => Directory.Exists(GitDirectory);
+            _canDetectHg = () => Directory.Exists(HgDirectory);
             _detectCurrent = () =>
             {
-                if (!_canDetect())
+                var canDetectGitResult = _canDetectGit();
+                var canDetectHgResult = _canDetectHg();
+                if (!canDetectGitResult && !canDetectHgResult)
                 {
-                    RippleAssert.Fail("Cannot use branch detection when not in a git repository");
+                    RippleAssert.Fail("Cannot use branch detection when not in a git or hg repository");
                 }
 
-                var head = File.ReadAllText(Path.Combine(GitDirectory,"HEAD"));
-
-                return head.Substring(head.LastIndexOf("/") + 1).Trim();
+                if (canDetectGitResult)
+                {
+                    var head = File.ReadAllText(Path.Combine(GitDirectory, "HEAD"));
+                    return head.Substring(head.LastIndexOf("/") + 1).Trim();
+                }
+                var hghead = File.ReadAllText(Path.Combine(HgDirectory, "branch"));
+                return hghead.Trim('\r', '\n', ' ', '\t');
             };
 
             reset();
@@ -44,20 +52,21 @@ namespace ripple.Model
             reset();
         }
 
-        public static void Stub(Func<bool> canDetect)
+        public static void Stub(Func<bool> canDetectGit, Func<bool> canDetectHg)
         {
-            _canDetect = canDetect;
+            _canDetectGit = canDetectGit;
+            _canDetectHg = canDetectHg;
         }
 
         public static void SetBranch(string branch)
         {
-            _canDetect = () => true;
+            _canDetectGit = () => true;
             _detectCurrent = () => branch;
         }
 
         public static bool CanDetectBranch()
         {
-            return _canDetect();
+            return _canDetectGit() || _canDetectHg();
         }
 
         public static string Current()
@@ -70,6 +79,14 @@ namespace ripple.Model
             get
             {
                 return Path.Combine(RippleFileSystem.FindSolutionDirectory(false) ?? "", ".git");
+            }
+        }
+
+        private static string HgDirectory
+        {
+            get
+            {
+                return Path.Combine(RippleFileSystem.FindSolutionDirectory(false) ?? "", ".hg");
             }
         }
     }
