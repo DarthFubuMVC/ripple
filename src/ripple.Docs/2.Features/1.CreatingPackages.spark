@@ -32,9 +32,9 @@
     <li><code>NextMajor</code>: The next major SemVer version (e.g., 1.0.0.0 => 2.0.0.0)</li>
 </ul>
 
-<p class="margin">The default Float constraint is <code>Current</code>. This means that floated dependencies define a dependency with a version constraint like: <code>version="1.1.0.0"</code>.</p>
+<p class="margin">The default Float constraint is <code>Current,NextMajor</code>. This means that floated dependencies define a dependency with a version constraint like: <code>version="[1.1.0.0,2.0.0.0)"</code>.</p>
 
-<p class="margin">The default Fixed constraint is <code>Current,NextMajor</code>. This means that floated dependencies define a dependency with a version constraint like: <code>version="[1.1.0.0,2.0.0.0)"</code>.</p>
+<p class="margin">The default Fixed constraint is <code>Current</code>. This means that floated dependencies define a dependency with a version constraint like: <code>version="1.1.0.0"</code>.</p>
 
 <p class="margin">Projects that reference other published projects (i.e., other nugets) use the configured Float constraint.</p>
 
