@@ -197,6 +197,7 @@
     <Compile Include="Nuget\NugetSearchTester.cs" />
     <Compile Include="Nuget\NugetStepRunnerTester.cs" />
     <Compile Include="Nuget\NugetXmlFeedTester.cs" />
+    <Compile Include="Nuget\NuspecDocumentTester.cs" />
     <Compile Include="Nuget\Operations\installing_a_fixed_project_dependency_any_stability.cs" />
     <Compile Include="Nuget\Operations\installing_a_fixed_project_dependency_released_only.cs" />
     <Compile Include="Nuget\Operations\installing_a_fixed_project_dependency_with_existing_transitive_dependencies.cs" />

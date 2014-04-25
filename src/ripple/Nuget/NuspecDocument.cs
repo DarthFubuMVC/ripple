@@ -63,6 +63,13 @@ namespace ripple.Nuget
         {
             var dependencies = _document.XPathSelectElement("//nuspec:dependencies", _xmlNamespaceManager);
 
+            if (dependencies == null)
+            {
+                var metadata = _document.XPathSelectElement("//nuspec:metadata", _xmlNamespaceManager);
+                dependencies = new XElement(XName.Get("dependencies", Schema));
+                metadata.Add(dependencies);
+            }
+
             foreach (XElement dependencyElement in dependencies.Nodes())
             {
                 if (dependencyElement.Attribute("id").Value == dependency.Name)
