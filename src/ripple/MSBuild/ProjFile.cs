@@ -8,6 +8,7 @@ using FubuCsProjFile;
 using NuGet;
 using ripple.Model;
 using Solution = ripple.Model.Solution;
+using FubuCsProjFile.MSBuild;
 
 namespace ripple.MSBuild
 {
@@ -30,6 +31,7 @@ namespace ripple.MSBuild
             {
                 _project = CsProjFile.CreateAtLocation(_filename, solution.Name);
             }
+            _project.BuildProject.Settings = MSBuildProjectSettings.MinimizeChanges;
         }
 
         public CsProjFile Project { get { return _project; } }
