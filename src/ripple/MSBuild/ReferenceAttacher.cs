@@ -41,6 +41,7 @@ namespace ripple.MSBuild
 
         private void fixProject(Project project)
         {
+            var assembliesDico = new Dictionary<string, IPackageAssemblyReference>();
             project.Dependencies.Each(dep =>
             {
                 var package = _packages[dep.Name];
@@ -59,8 +60,12 @@ namespace ripple.MSBuild
                     project.Proj.AddAssemblies(dep, explicitRefs, assemblies);
                     return;
                 }
-
-                project.Proj.AddAssemblies(dep, assemblies);
+                project.Proj.AddAssemblies(dep, assemblies.Where(c => !assembliesDico.ContainsKey(c.Name)));
+                assemblies.Each(a =>
+                    {
+                        if (!assembliesDico.ContainsKey(a.Name))
+                            assembliesDico.Add(a.Name, a);
+                    });
             });
         }
     }
