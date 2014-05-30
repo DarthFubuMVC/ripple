@@ -151,7 +151,7 @@ namespace ripple.Publishing
             try
             {
 	            var info = new FileInfo(file);
-                packageServer.PushPackage(apiKey, package, info.Length, (int)60.Minutes().TotalMilliseconds);
+                packageServer.PushPackage(apiKey, package, info.Length, (int) 60.Minutes().TotalMilliseconds, true);
                 return new PublishSuccessful(package);
             }
             catch (Exception ex)
