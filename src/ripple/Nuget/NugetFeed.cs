@@ -20,6 +20,11 @@ namespace ripple.Nuget
             Stability = stability;
 
             _online = new Lazy<bool>(isOnline);
+
+            // Tell Nuget that we are a commandline application so it doesn't use Weak Event Handling
+            // http://msdn.microsoft.com/en-us/library/aa970850(v=vs.100).aspx which is not
+            // currently implemented in mono.
+            EnvironmentUtility.SetRunningFromCommandLine ();
         }
 
         private IPackageRepository repository
