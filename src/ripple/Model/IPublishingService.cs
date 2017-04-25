@@ -152,12 +152,12 @@ namespace ripple.Model
         {
             var packageServer = new PackageServer(serverUrl, "ripple");
             var package = new OptimizedZipPackage(file);
-
+      
             RippleLog.Info("Publishing " + file + " with " + apiKey);
 
             try
             {
-                packageServer.PushPackage(apiKey, package, (int) 60.Minutes().TotalMilliseconds);
+                packageServer.PushPackage(apiKey, package, package.GetStream().Length,(int) 60.Minutes().TotalMilliseconds, false);
             }
             catch (InvalidOperationException ex)
             {
