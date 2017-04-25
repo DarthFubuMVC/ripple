@@ -19,6 +19,17 @@ namespace ripple.Nuget
 
         public static NugetName Parse(string input)
         {
+            // DH: Special condition for packages with version in name
+            // Quick n Dirty solution
+            if( input.StartsWith("EWS-Api-2.0") ) {
+              
+              return new NugetName
+              {
+                  Name = "EWS-Api-2.0",
+                  Version = SemanticVersion.Parse(input.Replace("EWS-Api-2.0.", "").Replace(".nupkg", ""))
+              };
+            }
+
             var matches = PackageVersionPattern.Match(input);
             if (!matches.Success) throw new InvalidOperationException("Invalid package name");
 
