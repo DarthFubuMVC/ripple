@@ -81,7 +81,7 @@ namespace ripple
                     cleanupPackages();
                     _solution.Reset();
 
-                    RippleLog.Error("Error executing {0}".ToFormat(step.GetType().Name), ex);
+                    RippleLog.Error("Error executing {0}, {1}".ToFormat(step.GetType().Name, ex.Message), ex);
                 
                     // Mostly for testing
                     if (_forceThrow || throwOnFailure)
@@ -99,6 +99,7 @@ namespace ripple
             if (_resetSolution)
             {
                 _solution.Reset();
+
             }
 
             return true;
