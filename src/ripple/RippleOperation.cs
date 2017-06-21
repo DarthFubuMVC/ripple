@@ -72,6 +72,7 @@ namespace ripple
         {
             foreach (var step in _steps)
             {
+                RippleLog.Info("Executing Step: " + step.GetType().Name);
                 try
                 {
                     step.Execute(_input, _runner);

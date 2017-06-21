@@ -81,10 +81,10 @@ namespace ripple.Nuget
                     parent = new NugetResult();
                     var problem = parent.AddProblem(task.Exception);
 
-                    RippleLog.Debug(problem.Message);
+                    RippleLog.Error(problem.Message);
                     if (problem.Exception != null)
                     {
-                        RippleLog.Debug(problem.Exception.StackTrace);
+                        RippleLog.Error(problem.Exception.StackTrace);
                     }
                 }
                 else
@@ -132,10 +132,11 @@ namespace ripple.Nuget
                         return NugetResult.For(nuget);
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
                     feed.MarkOffline();
-                    throw;
+                    RippleLog.Error("FindNuGet failed, " + ex.ToString());
+                    throw ex;
                 }
                 
             }
