@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FubuCore.Util;
 using NuGet;
@@ -17,13 +18,28 @@ namespace ripple.Nuget
         public IRemoteNuget Find(Dependency query)
         {
             var key = new CacheKey<Dependency>(query.IncludesPrelease(), query);
-
-            if (_findCache.Has(key) == false)
+      
+            int retries = 0;
+            retry:
+            if ( !_findCache.Has(key) )
             {
+                RippleLog.Info("Updating Cache: " + query.Name);
                 _findCache[key] = find(query) ?? Null;
             }
 
-            return Return(_findCache[key]);
+            IRemoteNuget result = Null;
+
+            try {
+              result = _findCache[key];
+
+            } catch( KeyNotFoundException ex) {
+              if( ++retries < 10 ) {
+                RippleLog.Info("Failed to find from Cache: " + query.Name + ", will retry...");
+                goto retry;
+              } else throw ex;
+            }
+
+            return Return(result);
         }
 
         protected abstract IRemoteNuget find(Dependency query);
