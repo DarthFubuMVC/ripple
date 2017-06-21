@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using FubuCore;
 using NuGet;
 using ripple.Model;
@@ -76,11 +77,25 @@ namespace ripple.Nuget
                 return null;
             }
 
+            int retries = 0;
             var versionSpec = new VersionSpec(version);
-            var package = repository
+            retry:
+              IPackage package = null;
+              try {
+                package = repository
                 .FindPackages(query.Name, versionSpec, query.DetermineStability(Stability) == NugetStability.Anything, true)
                 .OrderByDescending(x => x.Version)
                 .FirstOrDefault();
+
+              } catch( Exception ex ) {
+                if( ++retries < 10 ) {
+                  RippleLog.Info(ex.Message);
+                  RippleLog.Info("Will retry in 5sec...");
+                  Thread.Sleep(5000);
+                  goto retry;
+
+                } else throw ex;
+              }
 
             if (package == null)
             {
